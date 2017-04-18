@@ -22,11 +22,8 @@ $(document).ready(function() {
   paginateListAction('render-user-group', "<?php echo $data->actionlist; ?>");
   
   $(document).on('click', '.order', function() {
-    var sort = $(this).data('sort');
-    var order = $(this).data('order');
-    $('#orderby').val('?sort='+sort+'&order='+order);
-    // var getDatas = $('#orderby').val();
-    loadingList("<?php echo $data->actionlist; ?>");
+    var url = $(this).data('sort');
+    loadingList("<?php echo $data->actionlist; ?>"+url);
     return false;
   });
 

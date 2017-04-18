@@ -42,9 +42,63 @@ class UsergroupsController extends Controller {
 	}
 
 	public function getList() {
+		$request = \Request::all();
 		$this->data->edit_user_group = url('/user-groups/edit');
-		$this->data->get_url_datas = '?';
-		$this->data->user_groups = $this->usergroup->paginate(10)->setPath(url('/user-groups'));
+
+		// define data filter
+		if (isset($request['sort'])) {
+			$sort = $request['sort'];
+		} else {
+			$sort = 'created_at';
+		}
+
+		if (isset($request['order'])) {
+			$order = $request['order'];
+		} else {
+			$order = 'desc';
+		}
+
+		// define filter data
+		$filter_data = array(
+			'sort'	=> $sort,
+			'order'	=> $order
+		);
+
+		// define paginate url
+		$paginate_url = [];
+		if (isset($request['sort'])) {
+			$paginate_url['sort'] = $request['sort'];
+		}
+
+		if (isset($request['order'])) {
+			$paginate_url['order'] = $request['order'];
+		}
+
+		$this->data->user_groups = $this->usergroup->getUsergroups($filter_data)->paginate(3)->setPath(url('/user-groups'))->appends($paginate_url);
+
+		// define data
+		$this->data->sort = $sort;
+		$this->data->order = $order;
+
+		// define column sort
+		$url = '';
+		if ($order == 'asc') {
+			$url .= '&order=desc';
+		} else {
+			$url .= '&order=asc';
+		}
+
+		if (isset($request['page'])) {
+			$url .= '&page='.$request['page'];
+		}
+
+		$this->data->sort_name = '?sort=name'.$url;
+
+		// define column
+		$this->data->column_name = "User Group Name";
+		$this->data->column_system = "System";
+		$this->data->column_action = "Action";
+
 		return view('system.users.user_group.list', ['data' => $this->data]);
 	}
 
@@ -132,7 +186,7 @@ class UsergroupsController extends Controller {
 	public function postUpdate($user_group_id)
 	{
 		$request = \Request::all();
-		$validationError = $this->permission->validationForm(['request'=>$request]);
+		$validationError = $this->usergroup->validationForm(['request'=>$request]);
 		if($validationError) {
 			return \Response::json($validationError);
 		}

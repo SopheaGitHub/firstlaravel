@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
+use App\User;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
@@ -40,10 +41,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
             'password_confirmation' => 'required|in:'.$datas['request']['password']
         ];
 
+        $emailexist = User::where('email', '=', $datas['request']['email'])->count();
+        if($emailexist > 0){
+			$rules['emailexist'] = 'required';
+		}
+
         $messages = [
         	'name.required' => 'The <b>Name</b> field is required.',
         	'email.required' => 'The <b>E-Mail Address</b> field is required.',
         	'email.email' => 'The <b>E-Mail Address</b> be a valid email address.',
+        	'emailexist.required' => 'The <b>E-Mail Address</b> is already exist.',
         	'password.required' => 'The <b>Password</b> field is required.',
         	'password.min' => 'The <b>Password</b> must be at least 6 characters.',
         	'password_confirmation.required' => 'The <b>Confirm Password</b> field is required.',

@@ -4,12 +4,17 @@
       		<thead>
         		<tr>
         			<td style="width: 1px;" class="text-center">
-                <!-- <input name="orderby" id="orderby" value="<?php //echo (($data->get_url_datas)? $data->get_url_datas:''); ?>" /> -->
                 <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
               </td>
-        			<td class="text-left"><a href="#" class="order asc" data-sort="name" data-order="desc">User Group Name</a></td>
-        			<td class="text-left">System</td>
-        			<td class="text-right">Action</td>
+        			<td class="text-left">
+                <?php if ($data->sort == 'name') { ?>
+                  <a href="#" data-sort="<?php echo $data->sort_name; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_name; ?></a>
+                <?php } else { ?>
+                  <a href="#" data-sort="<?php echo $data->sort_name; ?>" class="order"><?php echo $data->column_name; ?></a>
+                <?php } ?>
+              </td>
+        			<td class="text-left"><?php echo $data->column_system; ?></td>
+        			<td class="text-right"><?php echo $data->column_action; ?></td>
        			</tr>
       		</thead>
       		<tbody>
@@ -56,10 +61,10 @@
         $start = ($data->user_groups->currentPage() * $data->user_groups->perPage()) - $data->user_groups->perPage() + 1;
         $stop = $data->user_groups->currentPage() * $data->user_groups->perPage();
         if($stop > $data->user_groups->total()){
-            $stop = ( $start + $data->user_groups->count()) - 1;
+          $stop = ( $start + $data->user_groups->count()) - 1;
         }
         if($stop == 0){
-            $start = 0;
+          $start = 0;
         }
       ?>
       Showing <?php echo $start; ?> to <?php echo $stop; ?> of <?php echo $data->user_groups->total(); ?> &nbsp;&nbsp; (<?php echo $data->user_groups->currentPage(); ?> Pages)

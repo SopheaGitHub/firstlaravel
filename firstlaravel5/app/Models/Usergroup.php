@@ -12,6 +12,11 @@ class Usergroup extends Model {
 		return $result;
 	}
 
+	public function getUsergroups($filter_data=[]) {
+		$db = Usergroup::orderBy($filter_data['sort'], $filter_data['order']);
+		return $db;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

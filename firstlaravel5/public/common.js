@@ -180,22 +180,23 @@ function requestSubmitForm(buttonId, formId, formAction) {
 // loading list data
 function loadingList (requestAction) {
 	$.ajax({
-  	type: "GET",
-  	url: requestAction,
-  	beforeSend:function() {
-  		console.log('beforeSend');
-    	$('#display-table').html('Loading ...').show();
-  	},
-  	complete:function() {
-    	console.log('complete');
-  	},
-  	success:function(html) {
-    	$('#display-table').html(html).show();
-  	},
-  	error:function(err) {
-    	$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
-  	}
-  });
+	  	type: "GET",
+	  	url: requestAction,
+	  	beforeSend:function() {
+	  		console.log('beforeSend');
+	    	// $('#display-table').html('Loading ...').show();
+	  	},
+	  	complete:function() {
+	    	console.log('complete');
+	  	},
+	  	success:function(html) {
+	    	$('#display-table').html(html).show();
+	  	},
+	  	error:function(err) {
+	    	$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
+	  	}
+	});
+	return false;
 }
 
 function paginateListAction (mainPaginateId, requestAction) {
@@ -211,7 +212,7 @@ function paginateListAction (mainPaginateId, requestAction) {
 	        	url: url,
 	        	beforeSend:function() {
 	    			console.log('beforeSend');
-	      			$('#display-table').html('Loading ...').show();
+	      			// $('#display-table').html('Loading ...').show();
 	    		},
 	    		complete:function() {
 	      			console.log('complete');
