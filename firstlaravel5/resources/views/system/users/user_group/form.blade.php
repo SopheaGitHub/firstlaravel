@@ -31,14 +31,14 @@
         <form action="#" method="post" enctype="multipart/form-data" id="form-user-group" class="form-horizontal">
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
           <div class="form-group required">
-            <label class="col-sm-2 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
-            <div class="col-sm-10">
+            <label class="col-sm-4 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
+            <div class="col-sm-6">
               <input type="text" name="name" value="<?php echo (($data->name)? $data->name:''); ?>" placeholder="<?php echo $data->entry_name; ?>" id="input-name" class="form-control" />
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label"><?php echo $data->entry_access; ?></label>
-            <div class="col-sm-10">
+            <label class="col-sm-4 control-label"><?php echo $data->entry_access; ?></label>
+            <div class="col-sm-6">
               <div class="well well-sm" style="height: 300px; overflow: auto;">
                 <?php foreach ($data->permissions as $permission) { ?>
                 <div class="checkbox">
@@ -86,7 +86,7 @@ $(document).ready(function() {
         if(data.error==1) {
           msg += '<div class="alert alert-warning" id="warning">';
           msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
-          msg += '<b><i class="fa fa-times"></i> '+data.msg+' :</b><br />';
+          msg += '<b><i class="fa fa-info-circle"></i> '+data.msg+' :</b><br />';
           if(data.validatormsg) {
             $.each(data.validatormsg, function(index, value) {
               msg += '- '+value+'<br />';
@@ -101,7 +101,9 @@ $(document).ready(function() {
           msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
           msg += '<b><i class="fa fa-check-circle"></i> '+data.msg+'</b><br />';
           msg += '</div>';
-          $("form#form-user-group")[0].reset();
+          if(data.action!='edit') {
+            $("form#form-user-group")[0].reset();
+          }
         }
 
         $('#message').html(msg).show();

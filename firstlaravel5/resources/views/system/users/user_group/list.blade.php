@@ -11,7 +11,7 @@
       		</thead>
       		<tbody>
       			<?php
-      				if($data->user_groups) {
+      				if(count($data->user_groups) > 0) {
       					foreach ($data->user_groups as $user_group) { ?>
       						<tr>
 	                  			<td class="text-center">

@@ -12,9 +12,14 @@ class Permission extends Model {
 		$ruless = [
             'name' => 'required'
         ];
-		$validator = \Validator::make($datas['request'],$ruless);
+
+        $messages = [
+        	'name.required' => 'The <b>User Group Name</b> field is required.'
+        ];
+
+		$validator = \Validator::make($datas['request'], $ruless, $messages);
 		if ($validator->fails()) {
-			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : add new user group unsuccessfully!','validatormsg'=>$validator->messages()];
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save user group unsuccessfully!','validatormsg'=>$validator->messages()];
         }
 		return $error;
 	}

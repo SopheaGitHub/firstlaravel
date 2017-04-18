@@ -79,11 +79,11 @@ class UsergroupsController extends Controller {
 		try {
 			$userGruopDatas = [
 				'name'			=> $request['name'],
-				'permission'	=> json_encode($request['permission'])
+				'permission'	=> ((isset($request['permission']))? json_encode($request['permission']):'')
 			];
 			$usergroup = $this->usergroup->create($userGruopDatas);
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','msg'=>'Success : add new user group successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save user group successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -114,7 +114,7 @@ class UsergroupsController extends Controller {
 	{
 		$this->data->usergroup = $this->usergroup->getUsergroup($user_group_id);
 		$datas = [
-			'action' => url('/user-groups/update'),
+			'action' => url('/user-groups/update/'.$user_group_id),
 			'titlelist'	=> 'Edit User Group',
 			'user_group' => $this->data->usergroup
 		];
@@ -128,9 +128,30 @@ class UsergroupsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($user_group_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->permission->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$userGruopDatas = [
+				'name'			=> $request['name'],
+				'permission'	=> ((isset($request['permission']))? json_encode($request['permission']):'')
+			];
+			$usergroup = $this->usergroup->where('user_group_id', '=', $user_group_id)->update($userGruopDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save user group successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**

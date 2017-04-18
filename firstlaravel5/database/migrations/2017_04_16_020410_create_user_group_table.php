@@ -17,7 +17,7 @@ class CreateUserGroupTable extends Migration {
 			$table->increments('user_group_id');
 			$table->string('name');
 			$table->longText('permission');
-			$table->integer('default', 1)->default(0);
+			$table->integer('default')->default(0);
 			$table->timestamps();
 		});
 	}
