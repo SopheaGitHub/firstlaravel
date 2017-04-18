@@ -22,6 +22,7 @@ function getURLVar(key) {
 	}
 }
 
+// get parse_url
 function parse_url (str, component) { // eslint-disable-line camelcase
     //       discuss at: http://locutus.io/php/parse_url/
     //      original by: Steven Levithan (http://blog.stevenlevithan.com)
@@ -118,6 +119,114 @@ function parse_url (str, component) { // eslint-disable-line camelcase
 
     delete uri.source
     return uri
+}
+
+// submit form data
+function requestSubmitForm(buttonId, formId, formAction) {
+	$(document).on('click', '#'+buttonId, function(e) {
+	    e.preventDefault();
+	    var postDatas = new FormData($("form#"+formId)[0]);
+	    $.ajax({
+	      	url: formAction,
+	      	type: "POST",
+	      	data: postDatas,
+	      	dataType: "json",
+	      	async: false,
+	      	beforeSend: function() {
+	        	console.log('beforeSend');
+	        	$('#message').html('Loading ...').show();
+	      	},
+	      	complete: function() {
+	        	console.log('completed');
+	      	},
+	      	success: function(data) {
+	        	var msg = '';
+	        	// if vaildate error
+	        	if(data.error==1) {
+	          		msg += '<div class="alert alert-warning" id="warning">';
+	         		msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+	          		msg += '<b><i class="fa fa-info-circle"></i> '+data.msg+' :</b><br />';
+	          		if(data.validatormsg) {
+	            		$.each(data.validatormsg, function(index, value) {
+	              			msg += '- '+value+'<br />';
+	            		});
+	          		}
+	          		msg += '</div>';
+	        	}
+
+	        	// if success
+	        	if(data.success==1) {
+	          		msg += '<div class="alert alert-success" id="success">';
+	          		msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
+	          		msg += '<b><i class="fa fa-check-circle"></i> '+data.msg+'</b><br />';
+	          		msg += '</div>';
+	          		if(data.action!='edit') {
+	            		$("form#"+formId)[0].reset();
+	          		}
+	        	}
+
+	        	$('#message').html(msg).show();
+	      	},
+	      	error: function(error) {
+	        	$('#message').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
+	      	},
+	      	cache: false,
+	      	contentType: false,
+	      	processData: false
+	    });
+  	});
+}
+
+// loading list data
+function loadingList (requestAction) {
+	$.ajax({
+  	type: "GET",
+  	url: requestAction,
+  	beforeSend:function() {
+  		console.log('beforeSend');
+    	$('#display-table').html('Loading ...').show();
+  	},
+  	complete:function() {
+    	console.log('complete');
+  	},
+  	success:function(html) {
+    	$('#display-table').html(html).show();
+  	},
+  	error:function(err) {
+    	$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
+  	}
+  });
+}
+
+function paginateListAction (mainPaginateId, requestAction) {
+	$(document).on('click','#'+mainPaginateId+' > .pagination > li > a',function(e){
+	    e.preventDefault();
+	    var value = $(this).attr('href');
+	    url = parse_url(value);
+	    if(url.query != ''){
+	      	var query = url.query;
+	      	var url = requestAction+"?"+query;
+	     	$.ajax({
+	        	type: 'GET',
+	        	url: url,
+	        	beforeSend:function() {
+	    			console.log('beforeSend');
+	      			$('#display-table').html('Loading ...').show();
+	    		},
+	    		complete:function() {
+	      			console.log('complete');
+	    		},
+	    		success:function(html) {
+	      			$('#display-table').html(html).show();
+	    		},
+	    		error:function(err) {
+	      			$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
+	    		}
+	      	});
+	      	return false;
+	    }
+	    return false;
+	});
 }
 
 $(document).ready(function() {

@@ -11,24 +11,8 @@
         <h3 class="panel-title"><i class="fa fa-pencil"></i> <?php echo $data->titlelist; ?></h3>
       </div>
       <div class="panel-body">
-
-        <?php 
-          if (count($errors) > 0) { ?>
-            <div class="alert alert-danger">
-              <strong>Whoops!</strong> There were some problems with your input.<br><br>
-              <ul>
-                <?php
-                  foreach ($errors->all() as $error) { ?>
-                    <li><?php echo $error; ?></li>
-                  <?php }
-                ?>
-              </ul>
-            </div>
-          <?php }
-        ?>
-
         <p id="message"></p>
-        <form action="#" method="post" enctype="multipart/form-data" id="form-user-group" class="form-horizontal">
+        <form action="#" method="POST" enctype="multipart/form-data" id="form-user-group" class="form-horizontal">
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
           <div class="form-group required">
             <label class="col-sm-4 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
@@ -64,58 +48,7 @@
 @section('script')
 <script type="text/javascript">
 $(document).ready(function() {
-  $(document).on('click', '#submit-usergroup', function(e) {
-    e.preventDefault();
-    var postDatas = new FormData($("form#form-user-group")[0]);
-    $.ajax({
-      url: "<?php echo $data->action; ?>",
-      type: "POST",
-      data: postDatas,
-      dataType: "json",
-      async: false,
-      beforeSend: function() {
-        console.log('beforeSend');
-        $('#message').html('Loading ...').show();
-      },
-      complete: function() {
-        console.log('completed');
-      },
-      success: function(data) {
-        var msg = '';
-        // if vaildate error
-        if(data.error==1) {
-          msg += '<div class="alert alert-warning" id="warning">';
-          msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
-          msg += '<b><i class="fa fa-info-circle"></i> '+data.msg+' :</b><br />';
-          if(data.validatormsg) {
-            $.each(data.validatormsg, function(index, value) {
-              msg += '- '+value+'<br />';
-            });
-          }
-          msg += '</div>';
-        }
-
-        // if success
-        if(data.success==1) {
-          msg += '<div class="alert alert-success" id="success">';
-          msg += '<button type="button" class="close" data-dismiss="alert">&times;</button>';
-          msg += '<b><i class="fa fa-check-circle"></i> '+data.msg+'</b><br />';
-          msg += '</div>';
-          if(data.action!='edit') {
-            $("form#form-user-group")[0].reset();
-          }
-        }
-
-        $('#message').html(msg).show();
-      },
-      error: function(error) {
-        $('#message').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
-      },
-      cache: false,
-      contentType: false,
-      processData: false
-    });
-  });
+  requestSubmitForm('submit-usergroup', 'form-user-group', "<?php echo $data->action; ?>");
 });
 </script>
 @endsection

@@ -12,4 +12,21 @@ class Usergroup extends Model {
 		return $result;
 	}
 
+	public function validationForm($datas=[]) {
+		$error = false;
+		$rules = [
+            'name' => 'required'
+        ];
+
+        $messages = [
+        	'name.required' => 'The <b>User Group Name</b> field is required.'
+        ];
+
+		$validator = \Validator::make($datas['request'], $rules, $messages);
+		if ($validator->fails()) {
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save user group unsuccessfully!','validatormsg'=>$validator->messages()];
+        }
+		return $error;
+	}
+
 }

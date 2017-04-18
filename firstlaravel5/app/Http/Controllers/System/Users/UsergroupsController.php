@@ -43,6 +43,7 @@ class UsergroupsController extends Controller {
 
 	public function getList() {
 		$this->data->edit_user_group = url('/user-groups/edit');
+		$this->data->get_url_datas = '?';
 		$this->data->user_groups = $this->usergroup->paginate(10)->setPath(url('/user-groups'));
 		return view('system.users.user_group.list', ['data' => $this->data]);
 	}
@@ -70,7 +71,7 @@ class UsergroupsController extends Controller {
 	public function postStore()
 	{
 		$request = \Request::all();
-		$validationError = $this->permission->validationForm(['request'=>$request]);
+		$validationError = $this->usergroup->validationForm(['request'=>$request]);
 		if($validationError) {
 			return \Response::json($validationError);
 		}

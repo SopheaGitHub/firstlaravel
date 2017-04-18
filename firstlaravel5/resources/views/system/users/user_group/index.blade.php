@@ -7,67 +7,29 @@
 <div class="container-fluid">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-    		<h3 class="panel-title"><i class="fa fa-list"></i> User Group List</h3>
-  		</div>
-      	<div class="panel-body" id="display-table">
+    	<h3 class="panel-title"><i class="fa fa-list"></i> User Group List</h3>
+  	</div>
+    <div class="panel-body" id="display-table">
 
-	    </div>
+	  </div>
 	</div>
 </div>
 @endsection
 @section('script')
 <script type="text/javascript">
 $(document).ready(function() {
-	loadingUserGroupList();
+	loadingList("<?php echo $data->actionlist; ?>");
+  paginateListAction('render-user-group', "<?php echo $data->actionlist; ?>");
+  
+  $(document).on('click', '.order', function() {
+    var sort = $(this).data('sort');
+    var order = $(this).data('order');
+    $('#orderby').val('?sort='+sort+'&order='+order);
+    // var getDatas = $('#orderby').val();
+    loadingList("<?php echo $data->actionlist; ?>");
+    return false;
+  });
 
-	$(document).on('click','#render-user-group > .pagination > li > a',function(e){
-        e.preventDefault();
-        var value = $(this).attr('href');
-        url = parse_url(value);
-        if(url.query != ''){
-          var query = url.query;
-          var url = "<?php echo $data->actionlist; ?>?"+query;
-          $.ajax({
-            type: 'GET',
-            url: url,
-            beforeSend:function() {
-        		console.log('beforeSend');
-          		$('#display-table').html('Loading ...').show();
-        	},
-        	complete:function() {
-          		console.log('complete');
-        	},
-        	success:function(html) {
-          		$('#display-table').html(html).show();
-        	},
-        	error:function(err) {
-          		$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
-        	}
-          });
-          return false;
-        }
-        return false;
-    });	
 });
-
-function loadingUserGroupList () {
-      	$.ajax({
-        	type: "GET",
-        	url: "<?php echo $data->actionlist; ?>",
-        	beforeSend:function() {
-        		console.log('beforeSend');
-          		$('#display-table').html('Loading ...').show();
-        	},
-        	complete:function() {
-          		console.log('complete');
-        	},
-        	success:function(html) {
-          		$('#display-table').html(html).show();
-        	},
-        	error:function(err) {
-          		$('#display-table').html('<div class="alert alert-danger" id="error"><button type="button" class="close" data-dismiss="alert">&times;</button><b><i class="fa fa-times"></i> Something wrong, Please alert to developer.</b></div>').show();
-        	}
-    	});
-	}
 </script>
 @endsection
