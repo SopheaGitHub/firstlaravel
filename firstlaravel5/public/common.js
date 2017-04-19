@@ -1,3 +1,4 @@
+$('#block-loader').hide();
 function getURLVar(key) {
 	var value = [];
 
@@ -134,10 +135,12 @@ function requestSubmitForm(buttonId, formId, formAction) {
 	      	async: false,
 	      	beforeSend: function() {
 	        	console.log('beforeSend');
-	        	$('#message').html('Loading ...').show();
+	        	// $('#message').html('Loading ...').show();
+	        	$('#block-loader').show();
 	      	},
 	      	complete: function() {
 	        	console.log('completed');
+	        	$('#block-loader').hide();
 	      	},
 	      	success: function(data) {
 	        	var msg = '';
@@ -185,9 +188,11 @@ function loadingList (requestAction) {
 	  	beforeSend:function() {
 	  		console.log('beforeSend');
 	    	// $('#display-table').html('Loading ...').show();
+	    	$('#block-loader').show();
 	  	},
 	  	complete:function() {
 	    	console.log('complete');
+	    	$('#block-loader').hide();
 	  	},
 	  	success:function(html) {
 	    	$('#display-table').html(html).show();
@@ -213,9 +218,11 @@ function paginateListAction (mainPaginateId, requestAction) {
 	        	beforeSend:function() {
 	    			console.log('beforeSend');
 	      			// $('#display-table').html('Loading ...').show();
+	      			$('#block-loader').show();
 	    		},
 	    		complete:function() {
 	      			console.log('complete');
+	      			$('#block-loader').hide();
 	    		},
 	    		success:function(html) {
 	      			$('#display-table').html(html).show();

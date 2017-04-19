@@ -77,7 +77,7 @@ class UsersController extends Controller {
 			$paginate_url['order'] = $request['order'];
 		}
 
-		$this->data->users = $this->user->getUsers($filter_data)->paginate(2)->setPath(url('/users'))->appends($paginate_url);
+		$this->data->users = $this->user->getUsers($filter_data)->paginate(10)->setPath(url('/users'))->appends($paginate_url);
 
 		// define data
 		$this->data->sort = $sort;

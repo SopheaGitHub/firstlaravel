@@ -12,9 +12,47 @@
 	.form-group + .form-group {
 		border-top: none;
 	}
+	#block-loader {
+	  /*position: absolute;*/
+	  z-index: 1000000;
+	  width: 100%;
+	  height: 100%;
+	  background: #010100;
+	  top: 0;
+	  left: 0;
+	  bottom: 0;
+	  right: 0;
+	  position: fixed;
+	  background-color: rgba(0,0,0,0.2);
+	}
+	.myloader {
+	  border: 16px solid #f3f3f3;
+	  border-radius: 50%;
+	  border-top: 16px solid #1e91cf;
+	  width: 100px;
+	  height: 100px;
+	  margin: 15% auto;
+	  opacity: 10;
+	  -webkit-animation: spin 2s linear infinite;
+	  animation: spin 2s linear infinite;
+	  
+	}
+
+	@-webkit-keyframes spin {
+	  0% { -webkit-transform: rotate(0deg); }
+	  100% { -webkit-transform: rotate(360deg); }
+	}
+
+	@keyframes spin {
+	  0% { transform: rotate(0deg); }
+	  100% { transform: rotate(360deg); }
+	}
 </style>
 </head>
 <body>
+<div id="block-loader">
+  <div class="myloader"></div>
+</div>
 <div id="container">
   	@include('templates.oc_header')
   	@include('templates.oc_menu')
