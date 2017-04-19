@@ -74,7 +74,7 @@ class UsergroupsController extends Controller {
 			$paginate_url['order'] = $request['order'];
 		}
 
-		$this->data->user_groups = $this->usergroup->getUsergroups($filter_data)->paginate(3)->setPath(url('/user-groups'))->appends($paginate_url);
+		$this->data->user_groups = $this->usergroup->getUsergroups($filter_data)->paginate(10)->setPath(url('/user-groups'))->appends($paginate_url);
 
 		// define data
 		$this->data->sort = $sort;

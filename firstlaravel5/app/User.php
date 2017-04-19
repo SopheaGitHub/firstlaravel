@@ -32,6 +32,16 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 */
 	protected $hidden = ['password', 'remember_token'];
 
+	public function getUser($user_id) {
+		$result = User::where('id', '=', $user_id)->first();
+		return $result;
+	}
+
+	public function getUsers($filter_data=[]) {
+		$db = User::orderBy($filter_data['sort'], $filter_data['order']);
+		return $db;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

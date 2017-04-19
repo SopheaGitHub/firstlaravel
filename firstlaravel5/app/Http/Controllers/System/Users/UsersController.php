@@ -38,8 +38,74 @@ class UsersController extends Controller {
 	 */
 	public function getIndex()
 	{
+		$this->data->actionlist = url('/users/list');
 		$this->data->add_user = url('/users/create');
 		return view('system.users.user.index', ['data' => $this->data]);
+	}
+
+	public function getList() {
+		$request = \Request::all();
+		$this->data->edit_user = url('/users/edit');
+		$this->data->change_password_user = url('/users/change-password');
+
+		// define data filter
+		if (isset($request['sort'])) {
+			$sort = $request['sort'];
+		} else {
+			$sort = 'created_at';
+		}
+
+		if (isset($request['order'])) {
+			$order = $request['order'];
+		} else {
+			$order = 'desc';
+		}
+
+		// define filter data
+		$filter_data = array(
+			'sort'	=> $sort,
+			'order'	=> $order
+		);
+
+		// define paginate url
+		$paginate_url = [];
+		if (isset($request['sort'])) {
+			$paginate_url['sort'] = $request['sort'];
+		}
+
+		if (isset($request['order'])) {
+			$paginate_url['order'] = $request['order'];
+		}
+
+		$this->data->users = $this->user->getUsers($filter_data)->paginate(2)->setPath(url('/users'))->appends($paginate_url);
+
+		// define data
+		$this->data->sort = $sort;
+		$this->data->order = $order;
+
+		// define column sort
+		$url = '';
+		if ($order == 'asc') {
+			$url .= '&order=desc';
+		} else {
+			$url .= '&order=asc';
+		}
+
+		if (isset($request['page'])) {
+			$url .= '&page='.$request['page'];
+		}
+
+		$this->data->sort_name = '?sort=name'.$url;
+		$this->data->sort_status = '?sort=status'.$url;
+		$this->data->sort_created_at = '?sort=created_at'.$url;
+
+		// define column
+		$this->data->column_name = "Username";
+		$this->data->column_status = "Status";
+		$this->data->column_date_added = "Date Added";
+		$this->data->column_action = "Action";
+
+		return view('system.users.user.list', ['data' => $this->data]);
 	}
 
 	/**
@@ -108,9 +174,16 @@ class UsersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($user_id)
 	{
-		//
+		$this->data->user = $this->user->getUser($user_id);
+		$datas = [
+			'action' => url('/users/update/'.$user_id),
+			'titlelist'	=> 'Edit User',
+			'user_group' => $this->data->user
+		];
+		echo $this->getUserForm($datas);
+		exit();
 	}
 
 	/**
