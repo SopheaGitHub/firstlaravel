@@ -18,35 +18,35 @@
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_name; ?></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="name" value="<?php echo old('name'); ?>">
+              <input type="text" class="form-control" name="name" value="<?php echo old('name'); ?>" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_email_address; ?></label>
             <div class="col-sm-6">
-              <input type="email" class="form-control" name="email" value="<?php echo old('email'); ?>">
+              <input type="email" class="form-control" name="email" value="<?php echo old('email'); ?>" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="password">
+              <input type="password" class="form-control" name="password" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_confirm_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="password_confirmation">
+              <input type="password" class="form-control" name="password_confirmation" />
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-sm-4 control-label"><?php echo $data->entry_user_group_name; ?></label>
             <div class="col-sm-6">
-              <select name="user_group_id" id="input-user-group-id" class="form-control">
+              <select name="user_group_id" id="input-user-group-id" class="form-control" />
                 <?php
                   foreach ($data->usergroups as $key => $usergroup) { ?>
                     <option value="<?php echo $key; ?>"><?php echo $usergroup; ?></option>
@@ -59,7 +59,7 @@
           <div class="form-group">
             <label class="col-sm-4 control-label"><?php echo $data->entry_status; ?></label>
             <div class="col-sm-6">
-              <select name="status" id="input-status" class="form-control">
+              <select name="status" id="input-status" class="form-control" />
                 <?php
                   foreach ($data->status as $key => $status) { ?>
                     <option value="<?php echo $key; ?>"><?php echo $status; ?></option>

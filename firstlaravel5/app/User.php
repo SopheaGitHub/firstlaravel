@@ -74,4 +74,51 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $error;
 	}
 
+	public function validationEditForm($datas=[]) {
+		$error = false;
+		$rules = [
+            'name' => 'required',
+            'email' => 'required|email',
+        ];
+
+        $emailexist = User::where('email', '=', $datas['request']['email'])->where('id', '!=', $datas['request']['user_id'])->count();
+        if($emailexist > 0){
+			$rules['emailexist'] = 'required';
+		}
+
+        $messages = [
+        	'name.required' => 'The <b>Name</b> field is required.',
+        	'email.required' => 'The <b>E-Mail Address</b> field is required.',
+        	'email.email' => 'The <b>E-Mail Address</b> be a valid email address.',
+        	'emailexist.required' => 'The <b>E-Mail Address</b> is already exist.'
+        ];
+
+		$validator = \Validator::make($datas['request'], $rules, $messages);
+		if ($validator->fails()) {
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save user unsuccessfully!','validatormsg'=>$validator->messages()];
+        }
+		return $error;
+	}
+
+	public function validationChangePasswordForm($datas=[]) {
+		$error = false;
+		$rules = [
+            'new_password' => 'required|min:6',
+            'new_password_confirmation' => 'required|in:'.$datas['request']['new_password']
+        ];
+
+        $messages = [
+        	'new_password.required' => 'The <b>New Password</b> field is required.',
+        	'new_password.min' => 'The <b>New Password</b> must be at least 6 characters.',
+        	'new_password_confirmation.required' => 'The <b>Confirm New Password</b> field is required.',
+        	'new_password_confirmation.in' => 'The selected <b>Confirm New Password</b> is invalid.'
+        ];
+
+		$validator = \Validator::make($datas['request'], $rules, $messages);
+		if ($validator->fails()) {
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : change password user unsuccessfully!','validatormsg'=>$validator->messages()];
+        }
+		return $error;
+	}
+
 }

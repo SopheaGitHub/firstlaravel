@@ -180,9 +180,9 @@ class UsersController extends Controller {
 		$datas = [
 			'action' => url('/users/update/'.$user_id),
 			'titlelist'	=> 'Edit User',
-			'user_group' => $this->data->user
+			'user' => $this->data->user
 		];
-		echo $this->getUserForm($datas);
+		echo $this->getUserEditForm($datas);
 		exit();
 	}
 
@@ -192,9 +192,68 @@ class UsersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($user_id)
 	{
-		//
+		$request = \Request::all();
+		$request['user_id'] = $user_id;
+		$validationError = $this->user->validationEditForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$userDatas = [
+				'name'			=> $request['name'],
+				'user_group_id'	=> $request['user_group_id'],
+				'email'			=> $request['email'],
+				'status'		=> $request['status']
+			];
+			$user = $this->user->where('id', '=', $user_id)->update($userDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save user successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
+	}
+
+	public function getChangePassword($user_id) {
+		$datas = [
+			'action' => url('/users/update-change-password/'.$user_id),
+			'titlelist'	=> 'Change Password User',
+		];
+		echo $this->getUserChangePasswordForm($datas);
+		exit();
+	}
+
+	public function postUpdateChangePassword($user_id)
+	{
+		$request = \Request::all();
+		$request['user_id'] = $user_id;
+		$validationError = $this->user->validationChangePasswordForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$userDatas = [
+				'password'		=> Hash::make($request['new_password']),
+			];
+			$user = $this->user->where('id', '=', $user_id)->update($userDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : change password user successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -228,6 +287,49 @@ class UsersController extends Controller {
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
 		return view('system.users.user.form', ['data' => $this->data]);
+	}
+
+	public function getUserEditForm($datas=[]) {
+		$this->data->go_back = url('/users');
+		$this->data->usergroups = $this->usergroup->orderBy('name', 'asc')->lists('name', 'user_group_id');
+		$this->data->status = [
+			'1' => 'Enabled',
+			'0'	=> 'Disabled'
+		];
+
+		// define entry
+		$this->data->entry_name = 'Name';
+		$this->data->entry_email_address = 'E-Mail Address';
+		$this->data->entry_user_group_name = 'User Group Name';
+		$this->data->entry_status = 'Status';
+
+		if(isset($datas['user'])) {
+			$this->data->name = $datas['user']->name;
+			$this->data->email = $datas['user']->email;
+			$this->data->user_group_id = $datas['user']->user_group_id;
+			$this->data->user_status = $datas['user']->status;
+		}else {
+			$this->data->name = '';
+			$this->data->email = '';
+			$this->data->user_group_id = '';
+			$this->data->status = '';
+		}
+
+		$this->data->action = (($datas['action'])? $datas['action']:'');
+		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
+
+		return view('system.users.user.edit_form', ['data' => $this->data]);
+	}
+
+	public function getUserChangePasswordForm($datas=[]) {
+		$this->data->go_back = url('/users');
+		$this->data->entry_new_password = 'New Password';
+		$this->data->entry_confirm_new_password = 'Confirm New Password';
+
+		$this->data->action = (($datas['action'])? $datas['action']:'');
+		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
+
+		return view('system.users.user.change_password_form', ['data' => $this->data]);
 	}
 
 }
