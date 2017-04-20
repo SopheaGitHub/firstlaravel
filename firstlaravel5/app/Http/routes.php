@@ -20,8 +20,16 @@ Route::get('template', 'HomeController@template');
 Route::group(['namespace' => 'System\Users'], function()
 {
 	Route::controllers([
-		'users' 			=> 'UsersController',
-		'user-groups' 	=> 'UsergroupsController'
+		'users' 		=> 'UsersController',
+		'user-groups' 	=> 'UsergroupsController',
+	]);
+});
+
+// controllers/system/localisation
+Route::group(['namespace' => 'System\Localisation'], function()
+{
+	Route::controllers([
+		'languages'		=> 'LanguagesController'
 	]);
 });
 

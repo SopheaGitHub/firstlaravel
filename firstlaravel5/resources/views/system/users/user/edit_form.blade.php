@@ -18,14 +18,14 @@
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_name; ?></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="name" value="<?php echo (($data->name)? $data->name:''); ?>">
+              <input type="text" class="form-control" placeholder="<?php echo $data->entry_name; ?>" name="name" value="<?php echo (($data->name)? $data->name:''); ?>">
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_email_address; ?></label>
             <div class="col-sm-6">
-              <input type="email" class="form-control" name="email" value="<?php echo (($data->email)? $data->email:''); ?>">
+              <input type="email" class="form-control" placeholder="<?php echo $data->entry_email_address; ?>"name="email" value="<?php echo (($data->email)? $data->email:''); ?>">
             </div>
           </div>
 

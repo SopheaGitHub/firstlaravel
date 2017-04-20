@@ -1,7 +1,7 @@
 <nav id="column-left"><div id="profile">
   <div>
-        <i class="fa fa-opencart"></i>
-      </div>
+    <i class="fa fa-opencart"></i>
+  </div>
   <div>
     <h4>John Doe</h4>
     <small>Administrator</small>
@@ -25,7 +25,7 @@
         </li>
         <li><a class="parent">Localisation</a>
           <ul>
-            <li><a href="<?php echo url('/language'); ?>">Languages</a></li>
+            <li><a href="<?php echo url('/languages'); ?>">Languages</a></li>
             <li><a href="<?php echo url('/currency'); ?>">Currencies</a></li>
             <li><a href="<?php echo url('/country'); ?>">Countries</a></li>
             <li><a href="<?php echo url('/zone'); ?>">Zones</a></li>

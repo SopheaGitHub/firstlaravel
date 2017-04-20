@@ -16,16 +16,16 @@
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
 
           <div class="form-group required">
-            <label class="col-sm-4 control-label"><?php echo $data->entry_new_password; ?></label>
+            <label class="col-sm-4 control-label"><span data-toggle="tooltip" title="<?php echo $data->title_password; ?>"><?php echo $data->entry_new_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="new_password">
+              <input type="password" placeholder="<?php echo $data->entry_new_password; ?>" class="form-control" name="new_password">
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_confirm_new_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="new_password_confirmation">
+              <input type="password" placeholder="<?php echo $data->entry_confirm_new_password; ?>" class="form-control" name="new_password_confirmation">
             </div>
           </div>
 

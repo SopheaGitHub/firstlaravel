@@ -283,6 +283,9 @@ class UsersController extends Controller {
 		$this->data->entry_user_group_name = 'User Group Name';
 		$this->data->entry_status = 'Status';
 
+		// define input title
+		$this->data->title_password = 'Must be enter at least 6 characters, Ex:@As!02';
+
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
@@ -325,6 +328,9 @@ class UsersController extends Controller {
 		$this->data->go_back = url('/users');
 		$this->data->entry_new_password = 'New Password';
 		$this->data->entry_confirm_new_password = 'Confirm New Password';
+
+		// define input title
+		$this->data->title_password = 'Must be enter at least 6 characters, Ex:@As!02';
 
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');

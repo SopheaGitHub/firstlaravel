@@ -18,28 +18,28 @@
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_name; ?></label>
             <div class="col-sm-6">
-              <input type="text" class="form-control" name="name" value="<?php echo old('name'); ?>" />
+              <input type="text" class="form-control" placeholder="<?php echo $data->entry_name; ?>" name="name" value="<?php echo old('name'); ?>" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_email_address; ?></label>
             <div class="col-sm-6">
-              <input type="email" class="form-control" name="email" value="<?php echo old('email'); ?>" />
+              <input type="email" class="form-control" placeholder="<?php echo $data->entry_email_address; ?>" name="email" value="<?php echo old('email'); ?>" />
             </div>
           </div>
 
           <div class="form-group required">
-            <label class="col-sm-4 control-label"><?php echo $data->entry_password; ?></label>
+            <label class="col-sm-4 control-label"><span data-toggle="tooltip" title="<?php echo $data->title_password; ?>"><?php echo $data->entry_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="password" />
+              <input type="password" class="form-control" placeholder="<?php echo $data->entry_password; ?>" name="password" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label"><?php echo $data->entry_confirm_password; ?></label>
             <div class="col-sm-6">
-              <input type="password" class="form-control" name="password_confirmation" />
+              <input type="password" class="form-control" placeholder="<?php echo $data->entry_confirm_password; ?>" name="password_confirmation" />
             </div>
           </div>
 
