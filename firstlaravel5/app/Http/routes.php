@@ -29,7 +29,8 @@ Route::group(['namespace' => 'System\Users'], function()
 Route::group(['namespace' => 'System\Localisation'], function()
 {
 	Route::controllers([
-		'languages'		=> 'LanguagesController'
+		'languages'		=> 'LanguagesController',
+		'currencies'	=> 'CurrenciesController'
 	]);
 });
 

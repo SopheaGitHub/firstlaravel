@@ -2,7 +2,7 @@
 <html dir="ltr" lang="en">
 <head>
 <meta charset="UTF-8" />
-<title><?php echo ((isset($data->title))? $data->title:''); ?></title>
+<title><?php echo ((isset($data->web_title))? $data->web_title:''); ?></title>
 <base href="http://localhost/projects/firstlaravel5/public/" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 <link type="text/css" href="<?php echo asset('/bootstrap/css/bootstrap.css'); ?>" rel="stylesheet" />
@@ -62,7 +62,7 @@
 	      		<div class="pull-right">
 	      			@yield('button_pull_right')
 	      		</div>
-	      		<h1 style="color: #F4CB1C; font-size: 24px;"><?php echo ((isset($data->title))? $data->title:''); ?></h1>
+	      		<h1 style="color: #F4CB1C; font-size: 24px;"><?php echo ((isset($data->web_title))? $data->web_title:''); ?></h1>
 	      		<ul class="breadcrumb">
 	      			<?php
 	            		if(isset($data->breadcrumbs) && count($data->breadcrumbs) > 0) {

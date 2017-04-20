@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Language;
 
 use Illuminate\Http\Request;
+use DB;
 
 class LanguagesController extends Controller {
 
@@ -21,10 +22,10 @@ class LanguagesController extends Controller {
 
 		$this->data = new \stdClass();
 		$this->language = new Language();
-		$this->data->title = 'Languages';
+		$this->data->web_title = 'Languages';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
-			'user'	=> ['text' => 'Languages', 'href' => url('languages')]
+			'language'	=> ['text' => 'Languages', 'href' => url('languages')]
 		];
 	}
 
@@ -124,9 +125,35 @@ class LanguagesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function postStore()
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->language->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$languageDatas = [
+				'name'			=> $request['name'],
+				'code'			=> $request['code'],
+				'locale'		=> $request['locale'],
+				'image'			=> $request['image'],
+				'directory'		=> $request['directory'],
+				'sort_order'	=> $request['sort_order'],
+				'status'		=> $request['status']
+			];
+			$language = $this->language->create($languageDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save language successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -146,9 +173,16 @@ class LanguagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($language_id)
 	{
-		//
+		$this->data->language = $this->language->getLanguage($language_id);
+		$datas = [
+			'action' => url('/languages/update/'.$language_id),
+			'titlelist'	=> 'Edit Language',
+			'language' => $this->data->language
+		];
+		echo $this->getLanguageForm($datas);
+		exit();
 	}
 
 	/**
@@ -157,9 +191,35 @@ class LanguagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($language_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->language->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$languageDatas = [
+				'name'			=> $request['name'],
+				'code'			=> $request['code'],
+				'locale'		=> $request['locale'],
+				'image'			=> $request['image'],
+				'directory'		=> $request['directory'],
+				'sort_order'	=> $request['sort_order'],
+				'status'		=> $request['status']
+			];
+			$language = $this->language->where('language_id', '=', $language_id)->update($languageDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save language successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -187,7 +247,6 @@ class LanguagesController extends Controller {
 		$this->data->entry_locale = 'Locale';
 		$this->data->entry_image = 'Image';
 		$this->data->entry_directory = 'Directory';
-		$this->data->entry_filename = 'Filename';
 		$this->data->entry_status = 'Status';
 		$this->data->entry_sort_order = 'Sort Order';
 
@@ -197,6 +256,24 @@ class LanguagesController extends Controller {
 		$this->data->title_image = 'Example: gb.png';
 		$this->data->title_directory = 'Name of the language directory (case-sensitive)';
 		$this->data->title_filename = 'Main language filename without extension';
+
+		if(isset($datas['language'])) {
+			$this->data->name = $datas['language']->name;
+			$this->data->code = $datas['language']->code;
+			$this->data->locale = $datas['language']->locale;
+			$this->data->image = $datas['language']->image;
+			$this->data->directory = $datas['language']->directory;
+			$this->data->language_status = $datas['language']->status;
+			$this->data->sort_order = $datas['language']->sort_order;
+		}else {
+			$this->data->name = '';
+			$this->data->code = '';
+			$this->data->locale = '';
+			$this->data->image = '';
+			$this->data->directory = '';
+			$this->data->language_status = 1;
+			$this->data->sort_order = 0;
+		}
 
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');

@@ -24,7 +24,7 @@ class UsersController extends Controller {
 		$this->data = new \stdClass();
 		$this->user = new User();
 		$this->usergroup = new Usergroup();
-		$this->data->title = 'Users';
+		$this->data->web_title = 'Users';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'user'	=> ['text' => 'Users', 'href' => url('users')]

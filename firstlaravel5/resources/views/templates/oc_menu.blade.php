@@ -26,7 +26,7 @@
         <li><a class="parent">Localisation</a>
           <ul>
             <li><a href="<?php echo url('/languages'); ?>">Languages</a></li>
-            <li><a href="<?php echo url('/currency'); ?>">Currencies</a></li>
+            <li><a href="<?php echo url('/currencies'); ?>">Currencies</a></li>
             <li><a href="<?php echo url('/country'); ?>">Countries</a></li>
             <li><a href="<?php echo url('/zone'); ?>">Zones</a></li>
             <li><a href="<?php echo url('/geo-zone'); ?>">Geo Zones</a></li>

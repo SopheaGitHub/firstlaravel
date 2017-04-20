@@ -22,10 +22,10 @@ class UsergroupsController extends Controller {
 		$this->data = new \stdClass();
 		$this->permission = new Permission();
 		$this->usergroup = new Usergroup();
-		$this->data->title = 'User Groups';
+		$this->data->web_title = 'User Groups';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
-			'user'	=> ['text' => 'User Groups', 'href' => url('user-groups')]
+			'usergroup'	=> ['text' => 'User Groups', 'href' => url('user-groups')]
 		];
 	}
 

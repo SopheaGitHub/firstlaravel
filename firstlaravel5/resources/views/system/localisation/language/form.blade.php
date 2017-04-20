@@ -12,46 +12,41 @@
       </div>
       <div class="panel-body">
         <p id="message"></p>
-        <form action="https://demo.opencart.com/admin/index.php?route=localisation/language/add&amp;token=285421a03b1f8bb52daaf925a9e958cf" method="post" enctype="multipart/form-data" id="form-language" class="form-horizontal">
+        <form action="#" method="post" enctype="multipart/form-data" id="form-language" class="form-horizontal">
+          <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
+
           <div class="form-group required">
             <label class="col-sm-4 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
             <div class="col-sm-6">
-              <input type="text" name="name" value="" placeholder="<?php echo $data->entry_name; ?>" id="input-name" class="form-control" />
+              <input type="text" name="name" value="<?php echo (($data->name)? $data->name:''); ?>" placeholder="<?php echo $data->entry_name; ?>" id="input-name" class="form-control" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label" for="input-code"><span data-toggle="tooltip" title="<?php echo $data->title_code; ?>"><?php echo $data->entry_code; ?></span></label>
             <div class="col-sm-6">
-              <input type="text" name="code" value="" placeholder="<?php echo $data->entry_code; ?>" id="input-code" class="form-control" />
+              <input type="text" name="code" value="<?php echo (($data->code)? $data->code:''); ?>" placeholder="<?php echo $data->entry_code; ?>" id="input-code" class="form-control" />
             </div>
           </div>
 
           <div class="form-group">
             <label class="col-sm-4 control-label required" for="input-locale"><span data-toggle="tooltip" title="<?php echo $data->title_locale; ?>"><?php echo $data->entry_locale; ?></span></label>
             <div class="col-sm-6">
-              <input type="text" name="locale" value="" placeholder="<?php echo $data->entry_locale; ?>" id="input-locale" class="form-control" />
+              <input type="text" name="locale" value="<?php echo (($data->locale)? $data->locale:''); ?>" placeholder="<?php echo $data->entry_locale; ?>" id="input-locale" class="form-control" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label" for="input-image"><span data-toggle="tooltip" title="<?php echo $data->title_image; ?>"><?php echo $data->entry_image; ?></span></label>
             <div class="col-sm-6">
-              <input type="text" name="image" value="" placeholder="<?php echo $data->entry_image; ?>" id="input-image" class="form-control" />
+              <input type="text" name="image" value="<?php echo (($data->image)? $data->image:''); ?>" placeholder="<?php echo $data->entry_image; ?>" id="input-image" class="form-control" />
             </div>
           </div>
 
           <div class="form-group required">
             <label class="col-sm-4 control-label" for="input-directory"><span data-toggle="tooltip" title="<?php echo $data->title_directory; ?>"><?php echo $data->entry_directory; ?></span></label>
             <div class="col-sm-6">
-              <input type="text" name="directory" value="" placeholder="<?php echo $data->entry_directory; ?>" id="input-directory" class="form-control" />
-            </div>
-          </div>
-
-          <div class="form-group required">
-            <label class="col-sm-4 control-label" for="input-filename"><span data-toggle="tooltip" title="<?php echo $data->title_filename; ?>"><?php echo $data->entry_filename; ?></span></label>
-            <div class="col-sm-6">
-              <input type="text" name="filename" value="" placeholder="<?php echo $data->entry_filename; ?>" id="input-filename" class="form-control" />
+              <input type="text" name="directory" value="<?php echo (($data->directory)? $data->directory:''); ?>" placeholder="<?php echo $data->entry_directory; ?>" id="input-directory" class="form-control" />
             </div>
           </div>
 
@@ -61,7 +56,7 @@
               <select name="status" id="input-status" class="form-control" />
                 <?php
                   foreach ($data->status as $key => $status) { ?>
-                    <option value="<?php echo $key; ?>"><?php echo $status; ?></option>
+                    <option <?php echo (($key == $data->language_status)? 'selected="selected"':''); ?> value="<?php echo $key; ?>"><?php echo $status; ?></option>
                   <?php }
                 ?>
               </select>
@@ -71,7 +66,7 @@
           <div class="form-group">
             <label class="col-sm-4 control-label" for="input-sort-order"><?php echo $data->entry_sort_order; ?></label>
             <div class="col-sm-6">
-              <input type="text" name="sort_order" value="" placeholder="<?php echo $data->entry_sort_order; ?>" id="input-sort-order" class="form-control" />
+              <input type="text" name="sort_order" value="<?php echo (($data->sort_order)? $data->sort_order:'0'); ?>" placeholder="<?php echo $data->entry_sort_order; ?>" id="input-sort-order" class="form-control" />
             </div>
           </div>
 
