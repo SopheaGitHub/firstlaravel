@@ -27,9 +27,9 @@
           <ul>
             <li><a href="<?php echo url('/languages'); ?>">Languages</a></li>
             <li><a href="<?php echo url('/currencies'); ?>">Currencies</a></li>
-            <li><a href="<?php echo url('/country'); ?>">Countries</a></li>
-            <li><a href="<?php echo url('/zone'); ?>">Zones</a></li>
-            <li><a href="<?php echo url('/geo-zone'); ?>">Geo Zones</a></li>
+            <li><a href="<?php echo url('/countries'); ?>">Countries</a></li>
+            <li><a href="<?php echo url('/zones'); ?>">Zones</a></li>
+            <li><a href="<?php echo url('/geo-zones'); ?>">Geo Zones</a></li>
           </ul>
         </li>
         <li><a href="#">API</a></li>

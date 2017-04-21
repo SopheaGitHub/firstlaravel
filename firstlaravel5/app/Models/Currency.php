@@ -36,7 +36,7 @@ class Currency extends Model {
 
 		$validator = \Validator::make($datas['request'], $rules, $messages);
 		if ($validator->fails()) {
-			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save language unsuccessfully!','validatormsg'=>$validator->messages()];
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save currency unsuccessfully!','validatormsg'=>$validator->messages()];
         }
 		return $error;
 	}

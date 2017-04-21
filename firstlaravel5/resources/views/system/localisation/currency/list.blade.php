@@ -14,7 +14,7 @@
                 <?php } ?>
               </td>
               <td class="text-left">
-                <?php if ($data->sort == 'status') { ?>
+                <?php if ($data->sort == 'code') { ?>
                   <a href="#" data-sort="<?php echo $data->sort_code; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_code; ?></a>
                 <?php } else { ?>
                   <a href="#" data-sort="<?php echo $data->sort_code; ?>" class="order"><?php echo $data->column_code; ?></a>

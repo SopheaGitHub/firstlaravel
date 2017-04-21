@@ -30,7 +30,10 @@ Route::group(['namespace' => 'System\Localisation'], function()
 {
 	Route::controllers([
 		'languages'		=> 'LanguagesController',
-		'currencies'	=> 'CurrenciesController'
+		'currencies'	=> 'CurrenciesController',
+		'countries'		=> 'CountriesController',
+		'zones'			=> 'ZonesController',
+		'geo-zones'		=>	'GeoZonesController'
 	]);
 });
 

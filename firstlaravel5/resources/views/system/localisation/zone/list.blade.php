@@ -21,10 +21,10 @@
                 <?php } ?>
               </td>
               <td class="text-left">
-                <?php if ($data->sort == 'sort_order') { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_sort_order; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_sort_order; ?></a>
+                <?php if ($data->sort == 'country_id') { ?>
+                  <a href="#" data-sort="<?php echo $data->sort_country_id; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_country_id; ?></a>
                 <?php } else { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_sort_order; ?>" class="order"><?php echo $data->column_sort_order; ?></a>
+                  <a href="#" data-sort="<?php echo $data->sort_country_id; ?>" class="order"><?php echo $data->column_country_id; ?></a>
                 <?php } ?>
               </td>
               <td class="text-right"><?php echo $data->column_action; ?></td>
@@ -32,17 +32,17 @@
           </thead>
           <tbody>
             <?php
-              if(count($data->languages) > 0) {
-                foreach ($data->languages as $language) { ?>
+              if(count($data->zones) > 0) {
+                foreach ($data->zones as $zone) { ?>
                   <tr>
                     <td class="text-center">
-                      <input type="checkbox" name="selected[]" value="<?php echo $language->language_id; ?>" />
+                      <input type="checkbox" name="selected[]" value="<?php echo $zone->zone_id; ?>" />
                     </td>
-                    <td class="text-left"><?php echo $language->name; ?></td>
-                    <td class="text-left"><?php echo $language->code; ?></td>
-                    <td class="text-left"><?php echo $language->sort_order; ?></td>
+                    <td class="text-left"><?php echo $zone->name; ?></td>
+                    <td class="text-left"><?php echo $zone->code; ?></td>
+                    <td class="text-left"><?php echo $zone->country_name; ?></td>
                     <td class="text-right">
-                      <a href="<?php echo $data->edit_language; ?>/<?php echo $language->language_id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                      <a href="<?php echo $data->edit_zone; ?>/<?php echo $zone->zone_id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
                    	</td>
                   </tr>
                 <?php } 
@@ -57,18 +57,18 @@
     </div>
 </form>
 <div class="row">
-    <div class="col-sm-6 text-left" id="render-language"><?php echo $data->languages->render(); ?></div>
+    <div class="col-sm-6 text-left" id="render-zone"><?php echo $data->zones->render(); ?></div>
     <div class="col-sm-6 text-right">
       <?php
-        $start = ($data->languages->currentPage() * $data->languages->perPage()) - $data->languages->perPage() + 1;
-        $stop = $data->languages->currentPage() * $data->languages->perPage();
-        if($stop > $data->languages->total()){
-          $stop = ( $start + $data->languages->count()) - 1;
+        $start = ($data->zones->currentPage() * $data->zones->perPage()) - $data->zones->perPage() + 1;
+        $stop = $data->zones->currentPage() * $data->zones->perPage();
+        if($stop > $data->zones->total()){
+          $stop = ( $start + $data->zones->count()) - 1;
         }
         if($stop == 0){
           $start = 0;
         }
       ?>
-      Showing <?php echo $start; ?> to <?php echo $stop; ?> of <?php echo $data->languages->total(); ?> &nbsp;&nbsp; (<?php echo $data->languages->currentPage(); ?> Pages)
+      Showing <?php echo $start; ?> to <?php echo $stop; ?> of <?php echo $data->zones->total(); ?> &nbsp;&nbsp; (<?php echo $data->zones->currentPage(); ?> Pages)
   </div>
 </div>

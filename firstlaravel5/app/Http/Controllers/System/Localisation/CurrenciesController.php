@@ -22,7 +22,7 @@ class CurrenciesController extends Controller {
 
 		$this->data = new \stdClass();
 		$this->currency = new Currency();
-		$this->data->web_title = 'Currency';
+		$this->data->web_title = 'Currencies';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'currency'	=> ['text' => 'Currencies', 'href' => url('currencies')]
@@ -74,7 +74,7 @@ class CurrenciesController extends Controller {
 			$paginate_url['order'] = $request['order'];
 		}
 
-		$this->data->currencies = $this->currency->getCurrencies($filter_data)->paginate(1)->setPath(url('/currencies'))->appends($paginate_url);
+		$this->data->currencies = $this->currency->getCurrencies($filter_data)->paginate(10)->setPath(url('/currencies'))->appends($paginate_url);
 
 		// define data
 		$this->data->sort = $sort;
@@ -214,7 +214,7 @@ class CurrenciesController extends Controller {
 			];
 			$currency = $this->currency->where('currency_id', '=', $currency_id)->update($currencyDatas);
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save language successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save currency successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
