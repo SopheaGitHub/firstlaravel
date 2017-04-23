@@ -1,7 +1,7 @@
 <header id="header" class="navbar navbar-static-top">
   	<div class="navbar-header">
     	<a type="button" id="button-menu" class="pull-left" style="color: #F4CB1C;"><i style="color: #F4CB1C;" class="fa fa-indent fa-lg"></i></a>
-        <a href="<?php echo url('/home'); ?>" class="navbar-brand" style="color: #F4CB1C;">LARAVEL 5.0</a>
+      <a href="<?php echo url('/home'); ?>" class="navbar-brand hidden-xs" style="color: #F4CB1C;">LARAVEL 5.0</a>
     </div>
   	<ul class="nav pull-right">
     	<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown"><span class="label label-danger pull-left">1</span> <i class="fa fa-bell fa-lg"></i></a>

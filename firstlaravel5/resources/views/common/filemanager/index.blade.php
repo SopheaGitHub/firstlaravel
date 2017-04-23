@@ -20,17 +20,34 @@
         </div>
       </div>
       <hr />
-      <?php
-        echo '<pre>';
-          print_r($data);
-        echo '</pre>';
-      ?>
-      <!-- loop image-->
+      <?php foreach (array_chunk($data['images'], 4) as $image) { ?>
+      <div class="row">
+        <?php foreach ($image as $image) { ?>
+        <div class="col-sm-3 text-center">
+          <?php if ($image['type'] == 'directory') { ?>
+          <div class="text-center"><a href="<?php echo $image['href']; ?>" class="directory" style="vertical-align: middle;"><i class="fa fa-folder fa-5x"></i></a></div>
+          <label>
+            <input type="checkbox" name="path[]" value="<?php echo $image['path']; ?>" />
+            <?php echo $image['name']; ?></label>
+          <?php } ?>
+          <?php if ($image['type'] == 'image') { ?>
+          <a href="<?php echo $image['href']; ?>" class="thumbnail"><img src="<?php echo $image['thumb']; ?>" alt="<?php echo $image['name']; ?>" title="<?php echo $image['name']; ?>" /></a>
+          <label>
+            <input type="checkbox" name="path[]" value="<?php echo $image['path']; ?>" />
+            <?php echo $image['name']; ?></label>
+          <?php } ?>
+        </div>
+        <?php } ?>
+      </div>
+      <br />
+      <?php } ?>
     </div>
-    <!-- pagination -->
+    <div class="modal-footer"><?php echo $data['pagination']; ?></div>
+    <meta name="csrf-token" content="<?php echo csrf_token(); ?>" />
   </div>
 </div>
 <script type="text/javascript"><!--
+var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 <?php if ($data['target']) { ?>
 $('a.thumbnail').on('click', function(e) {
   e.preventDefault();
@@ -135,7 +152,7 @@ $('#button-upload').on('click', function() {
       clearInterval(timer);
 
       $.ajax({
-        url: '/filemanager',
+        url: "<?php echo url('/filemanager/upload?_token="+CSRF_TOKEN+"&directory='.$data['directory']); ?>",
         type: 'post',
         dataType: 'json',
         data: new FormData($('#form-upload')[0]),

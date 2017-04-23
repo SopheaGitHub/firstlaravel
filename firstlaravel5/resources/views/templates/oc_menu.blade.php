@@ -1,12 +1,13 @@
-<nav id="column-left"><div id="profile">
-  <div>
-    <i class="fa fa-opencart"></i>
+<nav id="column-left">
+  <div id="profile">
+    <div>
+      <i class="fa fa-opencart"></i>
+    </div>
+    <div>
+      <h4>John Doe</h4>
+      <small>Administrator</small>
+    </div>
   </div>
-  <div>
-    <h4>John Doe</h4>
-    <small>Administrator</small>
-  </div>
-</div>
   <ul id="menu">
     <li id="home">
       <a class="parent"><i class="fa fa-home fa-fw"></i> <span>Home</span></a>
