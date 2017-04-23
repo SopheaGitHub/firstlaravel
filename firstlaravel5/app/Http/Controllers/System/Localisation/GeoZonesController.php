@@ -2,6 +2,7 @@
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\Zone;
 use App\Models\GeoZone;
 
@@ -22,6 +23,7 @@ class GeoZonesController extends Controller {
 		$this->middleware('auth');
 
 		$this->data = new \stdClass();
+		$this->country = new Country();
 		$this->zone = new Zone();
 		$this->geo_zone = new GeoZone();
 		$this->data->web_title = 'Geo-Zones';
@@ -38,11 +40,9 @@ class GeoZonesController extends Controller {
 	 */
 	public function getIndex()
 	{
-		echo 'here';
-		exit();
 		$this->data->actionlist = url('/geo-zones/list');
 		$this->data->add_geo_zone = url('/geo-zones/create');
-		return view('system.localisation.zone.index', ['data' => $this->data]);
+		return view('system.localisation.geo_zone.index', ['data' => $this->data]);
 	}
 
 	public function getList() {
@@ -97,15 +97,14 @@ class GeoZonesController extends Controller {
 		}
 
 		$this->data->sort_name = '?sort=name'.$url;
-		$this->data->sort_code = '?sort=code'.$url;
-		$this->data->sort_country_id = '?sort=country_id'.$url;
+		$this->data->sort_description = '?sort=description'.$url;
 
 		// define column
 		$this->data->column_name = "Geo Zone Name";
-		$this->data->column_code = "Description";
+		$this->data->column_description = "Description";
 		$this->data->column_action = "Action";
 
-		return view('system.localisation.zone.list', ['data' => $this->data]);
+		return view('system.localisation.geo_zone.list', ['data' => $this->data]);
 	}
 
 	/**
@@ -113,9 +112,14 @@ class GeoZonesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function create()
+	public function getCreate()
 	{
-		//
+		$datas = [
+			'action' => url('/geo-zones/store'),
+			'titlelist'	=> 'Add Geo-Zone'
+		];
+		echo $this->getGeoZoneForm($datas);
+		exit();
 	}
 
 	/**
@@ -123,9 +127,38 @@ class GeoZonesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function postStore()
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->geo_zone->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$geo_zoneDatas = [
+				'name'			=> $request['name'],
+				'description'	=> $request['description']
+			];
+			$geo_zone = $this->geo_zone->create($geo_zoneDatas);
+
+			$zone_to_geo_zoneDatas = [
+				'geo_zone_id'		=> $geo_zone->id,
+				'zone_to_geo_zone_datas'	=> $request['zone_to_geo_zone']
+			];
+
+			$zone_to_geo_zone = $this->geo_zone->insertZoneToGeoZone($zone_to_geo_zoneDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save geo-zone successfully!', 'post'=>$geo_zone];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -145,9 +178,18 @@ class GeoZonesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($geo_zone_id)
 	{
-		//
+		$this->data->geo_zone = $this->geo_zone->getGeoZone($geo_zone_id);
+		$this->data->zone_to_geo_zones = $this->geo_zone->getZoneToGeoZones($geo_zone_id);
+		$datas = [
+			'action' => url('/geo-zones/update/'.$geo_zone_id),
+			'titlelist'	=> 'Edit Zone',
+			'geo_zone' => $this->data->geo_zone,
+			'zone_to_geo_zones'	=> $this->data->zone_to_geo_zones
+		];
+		echo $this->getGeoZoneForm($datas);
+		exit();
 	}
 
 	/**
@@ -156,9 +198,40 @@ class GeoZonesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($geo_zone_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->geo_zone->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$geo_zoneDatas = [
+				'name'			=> $request['name'],
+				'description'	=> $request['description']
+			];
+			$geo_zone = $this->geo_zone->where('geo_zone_id', '=', $geo_zone_id)->update($geo_zoneDatas);
+
+			$clear_zone_to_geo_zone = $this->geo_zone->deletedZoneToGeoZone($geo_zone_id);
+
+			$zone_to_geo_zoneDatas = [
+				'geo_zone_id'		=> $geo_zone_id,
+				'zone_to_geo_zone_datas'	=> $request['zone_to_geo_zone']
+			];
+
+			$zone_to_geo_zone = $this->geo_zone->insertZoneToGeoZone($zone_to_geo_zoneDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save geo-zone successfully!', 'post'=>$geo_zone];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -170,6 +243,49 @@ class GeoZonesController extends Controller {
 	public function destroy($id)
 	{
 		//
+	}
+
+	public function getGeoZoneForm($datas=[]) {
+		$this->data->go_back = url('/geo-zones');
+
+		$this->data->countries = $this->country->getCountries(['sort'=>'name','order'=>'asc'])->lists('name', 'country_id');
+
+		$this->data->status = [
+			'1' => 'Enabled',
+			'0'	=> 'Disabled'
+		];
+
+		// define entry
+		$this->data->entry_name = 'Geo Zone Name';
+		$this->data->entry_description = 'Description';
+		$this->data->entry_country = 'Country';
+		$this->data->entry_zone = 'Zone';
+
+		if(isset($datas['geo_zone'])) {
+			$this->data->name = $datas['geo_zone']->name;
+			$this->data->description = $datas['geo_zone']->description;
+		}else {
+			$this->data->name = '';
+			$this->data->description = '';
+		}
+
+		if(isset($datas['zone_to_geo_zones'])) {
+			$this->data->zone_to_geo_zones = $datas['zone_to_geo_zones'];
+		}else {
+			$this->data->zone_to_geo_zones = [];
+		}
+
+		$this->data->action = (($datas['action'])? $datas['action']:'');
+		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
+		$this->data->load_zone_action = url('geo-zones/zone');
+
+		return view('system.localisation.geo_zone.form', ['data' => $this->data]);
+	}
+
+	public function getZone($country_id, $zone_id) {
+		$this->data->country_zones = $this->zone->getZonesByContry($country_id);
+		$this->data->zone_id = $zone_id;
+		return view('system.localisation.geo_zone.zone_form', ['data' => $this->data]);
 	}
 
 }

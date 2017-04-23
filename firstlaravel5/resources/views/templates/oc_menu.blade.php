@@ -8,14 +8,18 @@
   </div>
 </div>
   <ul id="menu">
-    <li id="dashboard">
-      <a href="<?php echo url('/home') ?>"><i class="fa fa-dashboard fa-fw"></i> <span>Dashboard</span></a>
+    <li id="home">
+      <a class="parent"><i class="fa fa-home fa-fw"></i> <span>Home</span></a>
+      <ul>
+        <li><a href="<?php echo url('/home') ?>">Home</a></li>
+        <li><a href="<?php echo url('/dashboard') ?>">Dashboard</a></li>
+      </ul>
     </li>
     <li id="system">
       <a class="parent"><i class="fa fa-cog fa-fw"></i> <span>System</span></a>
       <ul>
         <li>
-          <a href="<?php echo url('/setting'); ?>">Settings</a>
+          <a href="<?php echo url('/settings'); ?>">Settings</a>
         </li>
         <li><a class="parent">Users</a>
           <ul>
@@ -38,16 +42,6 @@
             <li><a href="<?php echo url('/upload'); ?>">Uploads</a></li>
             <li><a href="<?php echo url('/backup-restore'); ?>">Backup / Restore</a></li>
             <li><a href="<?php echo url('/error-log'); ?>">Error Logs</a></li>
-          </ul>
-        </li>
-      </ul>
-    </li>
-    
-    <li id="reports"><a class="parent"><i class="fa fa-bar-chart-o fa-fw"></i> <span>Reports</span></a>
-      <ul>
-        <li><a class="parent">Projects</a>
-          <ul>
-            <li><a href="<?php echo url('/viewed'); ?>">Viewed</a></li>
           </ul>
         </li>
       </ul>

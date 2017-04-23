@@ -16,6 +16,22 @@ Route::get('/', 'WelcomeController@index');
 Route::get('home', 'HomeController@index');
 Route::get('template', 'HomeController@template');
 
+// controllers/common
+Route::group(['namespace' => 'Common'], function()
+{
+	Route::controllers([
+		'filemanager' 	=> 'FilemanagerController',
+	]);
+});
+
+// controllers/system
+Route::group(['namespace' => 'System'], function()
+{
+	Route::controllers([
+		'settings' 		=> 'SettingsController',
+	]);
+});
+
 // controllers/system/user
 Route::group(['namespace' => 'System\Users'], function()
 {

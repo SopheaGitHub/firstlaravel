@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <title><?php echo ((isset($data->web_title))? $data->web_title:''); ?></title>
-<base href="http://localhost/projects/firstlaravel5/public/" />
+<base href="http://localhost/projects/firstlaravel/firstlaravel5/public/" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 <link type="text/css" href="<?php echo asset('/bootstrap/css/bootstrap.css'); ?>" rel="stylesheet" />
 <link type="text/css" href="<?php echo asset('/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet" media="all">
