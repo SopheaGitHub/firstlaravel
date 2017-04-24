@@ -26,6 +26,11 @@ class Zone extends Model {
 		return $result;
 	}
 
+	public function getArrayZonesByContryID($country_id) {
+		$result = DB::table('zone')->where('country_id', '=', $country_id)->where('status', '=', '1')->orderBy('name', 'asc')->get();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

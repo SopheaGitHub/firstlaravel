@@ -4,6 +4,11 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Website;
 use App\Models\Setting;
+use App\Models\Language;
+use App\Models\Country;
+use App\Models\Zone;
+use App\Models\Currency;
+use App\Http\Controllers\Common\FilemanagerController;
 
 use Illuminate\Http\Request;
 
@@ -23,11 +28,17 @@ class SettingsController extends Controller {
 		$this->data = new \stdClass();
 		$this->website = new Website();
 		$this->setting = new Setting();
+		$this->language = new Language();
+		$this->currency = new Currency();
+		$this->country = new Country();
+		$this->zone = new Zone();
+		$this->filemanager = new FilemanagerController();
 		$this->data->web_title = 'Settings';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'setting'	=> ['text' => 'Settings', 'href' => url('settings')]
 		];
+		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
 	}
 
 	/**
@@ -177,6 +188,11 @@ class SettingsController extends Controller {
 	public function getSettingForm($datas=[]) {
 		$this->data->go_back = url('/settings');
 
+		$this->data->languages = $this->language->getLanguages(['sort' => 'name', 'order' => 'asc'])->lists('name', 'code');
+		$this->data->currencies = $this->currency->getCurrencies(['sort' => 'code', 'order' => 'asc'])->lists('title', 'code');
+		$this->data->countries = $this->country->getCountries(['sort' => 'name', 'order' => 'asc'])->lists('name', 'country_id');
+		$this->data->zones = $this->zone->getZones(['sort' => 'name', 'order' => 'asc'])->lists('name', 'zone_id');
+
 		// define tab
 		$this->data->tap_general = 'General';
 		$this->data->tap_website = 'Website';
@@ -211,6 +227,9 @@ class SettingsController extends Controller {
 		$this->data->entry_website_logo = 'Website Logo';
 		$this->data->entry_website_icon = 'Website Icon';
 
+		$this->data->text_select = '--please select--';
+		$this->data->text_none = '-- None --';
+
 		// define input title
 		$this->data->title_password = 'Must be enter at least 6 characters, Ex:@As!02';
 		$this->data->title_geocode = 'Please enter your store location geocode manually.';
@@ -223,11 +242,81 @@ class SettingsController extends Controller {
 
 		// define fieldset
 		$this->data->fieldset_list = 'Lists';
+
+		if(isset($datas['settings'])) {
+			foreach ($datas['settings'] as $key => $value) {
+				$this->data->{$value->key} = $value->value;
+			}
+		}else {
+			$this->data->config_icon = '';
+			$this->data->config_logo = '';
+			$this->data->config_limit_admin = '';
+			$this->data->config_currency = '';
+			$this->data->config_admin_language = '';
+			$this->data->config_language = '';
+			$this->data->config_zone_id = '';
+			$this->data->config_country_id = '';
+			$this->data->config_comment = '';
+			$this->data->config_open = '';
+			$this->data->config_image = '';
+			$this->data->config_fax = '';
+			$this->data->config_telephone = '';
+			$this->data->config_geocode = '';
+			$this->data->config_email = '';
+			$this->data->config_address = '';
+			$this->data->config_owner = '';
+			$this->data->config_name = '';
+			$this->data->config_meta_description = '';
+			$this->data->config_meta_keyword = '';
+			$this->data->config_meta_title = '';
+		}
+
+		if ($this->data->config_image && is_file($this->data->dir_image . $this->data->config_image)) {
+			$this->data->thumb = $this->filemanager->resize($this->data->config_image, 100, 100);
+		} else {
+			$this->data->thumb = $this->filemanager->resize('no_image.png', 100, 100);
+		}
+
+		$this->data->placeholder = $this->filemanager->resize('no_image.png', 100, 100);
+
+		if ($this->data->config_logo && is_file($this->data->dir_image . $this->data->config_logo)) {
+			$this->data->logo = $this->filemanager->resize($this->data->config_logo, 100, 100);
+		} else {
+			$this->data->logo = $this->filemanager->resize('no_image.png', 100, 100);
+		}
+
+		if ($this->data->config_icon && is_file($this->data->dir_image . $this->data->config_icon)) {
+			$this->data->icon = $this->filemanager->resize($this->data->config_icon, 100, 100);
+		} else {
+			$this->data->icon = $this->filemanager->resize('no_image.png', 100, 100);
+		}
 		
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
 		return view('system.settings.form', ['data' => $this->data]);
+	}
+
+	public function getCountry($country_id) {
+		$json = array();
+
+		$country_info = $this->country->getCountry($country_id);
+
+		if ($country_info) {
+
+			$json = array(
+				'country_id'        => $country_info->country_id,
+				'name'              => $country_info->name,
+				'iso_code_2'        => $country_info->iso_code_2,
+				'iso_code_3'        => $country_info->iso_code_3,
+				'address_format'    => $country_info->address_format,
+				'postcode_required' => $country_info->postcode_required,
+				'zone'              => $this->zone->getArrayZonesByContryID($country_id),
+				'status'            => $country_info->status
+			);
+		}
+
+		return json_encode($json);
 	}
 
 }
