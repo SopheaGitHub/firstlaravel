@@ -24,6 +24,16 @@ Route::group(['namespace' => 'Common'], function()
 	]);
 });
 
+// controllers/website
+Route::group(['namespace' => 'Website'], function()
+{
+	Route::controllers([
+		'categories' 		=> 'CategoriesController',
+		'posts' 		=> 'PostsController',
+		'information' 		=> 'InformationController',
+	]);
+});
+
 // controllers/system
 Route::group(['namespace' => 'System'], function()
 {

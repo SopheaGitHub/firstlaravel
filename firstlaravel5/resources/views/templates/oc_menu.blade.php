@@ -16,6 +16,14 @@
         <li><a href="<?php echo url('/dashboard') ?>">Dashboard</a></li>
       </ul>
     </li>
+    <li id="website">
+      <a class="parent"><i class="fa fa-globe fa-fw"></i> <span>Website</span></a>
+      <ul>
+        <li><a href="<?php echo url('/categories') ?>">Categories</a></li>
+        <li><a href="<?php echo url('/posts') ?>">Posts</a></li>
+        <li><a href="<?php echo url('/information') ?>">Information</a></li>
+      </ul>
+    </li>
     <li id="system">
       <a class="parent"><i class="fa fa-cog fa-fw"></i> <span>System</span></a>
       <ul>
