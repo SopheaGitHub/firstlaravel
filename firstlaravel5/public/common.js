@@ -324,7 +324,7 @@ $(document).ready(function() {
 		$(this).parents('.note-editor').find('.note-editable').focus();
 
 		$.ajax({
-			url: 'index.php?route=common/filemanager&token=' + getURLVar('token'),
+			url: 'filemanager',
 			dataType: 'html',
 			beforeSend: function() {
 				$('#button-image i').replaceWith('<i class="fa fa-circle-o-notch fa-spin"></i>');

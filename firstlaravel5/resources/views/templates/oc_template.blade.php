@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8" />
 <title><?php echo ((isset($data->web_title))? $data->web_title:''); ?></title>
-<base href="http://localhost:81/firstlaravel/firstlaravel5/public/" />
+<base href="http://localhost/projects/firstlaravel/firstlaravel5/public/" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
 <link type="text/css" href="<?php echo asset('/bootstrap/css/bootstrap.css'); ?>" rel="stylesheet" />
 <link type="text/css" href="<?php echo asset('/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet" media="all">
+<link rel="stylesheet" href="<?php echo asset('/summernote/summernote.css'); ?>">
 <link type="text/css" href="<?php echo asset('/css/stylesheet.css'); ?>" rel="stylesheet" media="screen" />
 <style type="text/css">
 	.form-group + .form-group {
@@ -82,6 +83,7 @@
 </div>
 <script src="<?php echo asset('/jquery/jquery.min.js'); ?>" type="text/javascript"></script>
 <script src="<?php echo asset('/bootstrap/js/bootstrap.min.js'); ?>" type="text/javascript"></script>
+<script src="<?php echo asset('/summernote/summernote.js'); ?>"></script>
 <script src="<?php echo asset('/common.js'); ?>" type="text/javascript"></script>
 @yield('script')
 </body>

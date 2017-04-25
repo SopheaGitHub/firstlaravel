@@ -39,7 +39,7 @@ class SettingsController extends Controller {
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'setting'	=> ['text' => 'Settings', 'href' => url('settings')]
 		];
-		$this->data->dir_image = 'C:/wamp/www/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
 	}
 
 	/**
