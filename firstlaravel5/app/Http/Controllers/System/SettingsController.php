@@ -11,6 +11,7 @@ use App\Models\Currency;
 use App\Http\Controllers\Common\FilemanagerController;
 
 use Illuminate\Http\Request;
+use DB;
 
 class SettingsController extends Controller {
 
@@ -38,7 +39,7 @@ class SettingsController extends Controller {
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'setting'	=> ['text' => 'Settings', 'href' => url('settings')]
 		];
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = 'C:/wamp/www/firstlaravel/firstlaravel5/public/images/';
 	}
 
 	/**
@@ -169,9 +170,26 @@ class SettingsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($website_id)
+	public function postUpdate($website_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->setting->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$setting = $this->setting->editSetting($request);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save user successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**

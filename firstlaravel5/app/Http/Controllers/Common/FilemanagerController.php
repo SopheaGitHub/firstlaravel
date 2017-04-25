@@ -22,7 +22,7 @@ class FilemanagerController extends Controller {
 		$this->data = new \stdClass();
 
 		// create define
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = 'C:/wamp/www/firstlaravel/firstlaravel5/public/images/';
 		$this->data->https_catalog = url('/');
 		$this->data->http_catalog = url('/');
 	}

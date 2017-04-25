@@ -13,6 +13,7 @@
       <div class="panel-body">
         <p id="message"></p>
         <form action="#" method="post" enctype="multipart/form-data" id="form-setting" class="form-horizontal">
+          <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
           <ul class="nav nav-tabs">
             <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $data->tap_general; ?></a></li>
             <li><a href="#tab-store" data-toggle="tab"><?php echo $data->tap_website; ?></a></li>
