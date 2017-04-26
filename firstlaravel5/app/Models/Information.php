@@ -27,23 +27,23 @@ class Information extends Model {
 	// 	return $result;
 	// }
 
-	// public function validationForm($datas=[]) {
-	// 	$error = false;
-	// 	$rules = [
- //            'name'			=> 'required',
- //            'code'			=> 'max:32',
- //        ];
+	public function validationForm($datas=[]) {
+		$error = false;
+		$rules = [
+            'name'			=> 'required',
+            'code'			=> 'max:32',
+        ];
 
- //        $messages = [
- //        	'name.required' => 'The <b>Country Name</b> field is required.',
- //        	'code.max' => 'The <b>Code</b> may not be greater than 32 characters.'
- //        ];
+        $messages = [
+        	'name.required' => 'The <b>Country Name</b> field is required.',
+        	'code.max' => 'The <b>Code</b> may not be greater than 32 characters.'
+        ];
 
-	// 	$validator = \Validator::make($datas['request'], $rules, $messages);
-	// 	if ($validator->fails()) {
-	// 		$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save zone unsuccessfully!','validatormsg'=>$validator->messages()];
- //        }
-	// 	return $error;
-	// }
+		$validator = \Validator::make($datas['request'], $rules, $messages);
+		if ($validator->fails()) {
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save zone unsuccessfully!','validatormsg'=>$validator->messages()];
+        }
+		return $error;
+	}
 
 }

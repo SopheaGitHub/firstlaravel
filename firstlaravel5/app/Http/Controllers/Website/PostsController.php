@@ -91,10 +91,10 @@ class PostsController extends Controller {
 			$url .= '&page='.$request['page'];
 		}
 
-		$this->data->sort_title = '?sort=title'.$url;
-		$this->data->sort_post_type = '?sort=post_type_id'.$url;
-		$this->data->sort_categories = '?sort=category_id'.$url;
-		$this->data->sort_author_name = '?sort=author_id'.$url;
+		$this->data->sort_title = '?sort=post_title'.$url;
+		$this->data->sort_post_type = '?sort=post_type_name'.$url;
+		$this->data->sort_categories = '?sort=category_name'.$url;
+		$this->data->sort_author_name = '?sort=author_name'.$url;
 
 		// define column
 		$this->data->column_title = "Post Title";

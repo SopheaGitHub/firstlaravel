@@ -16,6 +16,7 @@ class CreatePostTable extends Migration {
 		{
 			$table->increments('post_id');
 			$table->integer('post_type_id');
+			$table->integer('category_id');
 			$table->integer('author_id');
 			$table->string('image', 255);
 			$table->integer('sort_order')->default(0);

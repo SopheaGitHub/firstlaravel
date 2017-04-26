@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Language;
 
 use Illuminate\Http\Request;
 
@@ -20,8 +21,9 @@ class CategoriesController extends Controller {
 		$this->middleware('auth');
 
 		$this->data = new \stdClass();
-		$this->category = New Category();
+		$this->category = new Category();
 		$this->data->web_title = 'Categories';
+		$this->language = new Language();
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'category'	=> ['text' => 'Categories', 'href' => url('categories')]
@@ -107,9 +109,14 @@ class CategoriesController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function create()
+	public function getCreate()
 	{
-		//
+		$datas = [
+			'action' => url('/categories/store'),
+			'titlelist'	=> 'Add Category'
+		];
+		echo $this->getCategoryForm($datas);
+		exit();
 	}
 
 	/**
@@ -164,6 +171,42 @@ class CategoriesController extends Controller {
 	public function destroy($id)
 	{
 		//
+	}
+
+	public function getCategoryForm($datas=[]) {
+		$this->data->go_back = url('/categories');
+		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
+		$this->data->status = [
+			'1' => 'Enabled',
+			'0'	=> 'Disabled'
+		];
+
+		// define tap
+		$data['tab_general'] = 'General';
+		$data['tab_data'] = 'Data';
+		$data['tab_design'] = 'Design';
+
+		// define entry
+		$this->data->entry_name = 'Category Name';
+		$this->data->entry_description = 'Description';
+		$this->data->entry_meta_title = 'Meta Tag Title';
+		$this->data->entry_meta_description = 'Meta Tag Description';
+		$this->data->entry_meta_keyword = 'Meta Tag Keywords';
+
+		$this->data->entry_keyword = 'SEO Keyword';
+		$this->data->entry_bottom = 'Bottom';
+		$this->data->entry_status = 'Status';
+		$this->data->entry_sort_order = 'Sort Order';
+
+		$this->data->entry_layout = 'Layout';
+
+		// define input title
+		$this->data->title_password = 'Must be enter at least 6 characters, Ex:@As!02';
+
+		$this->data->action = (($datas['action'])? $datas['action']:'');
+		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
+
+		return view('website.category.form', ['data' => $this->data]);
 	}
 
 }

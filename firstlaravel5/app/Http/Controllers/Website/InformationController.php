@@ -124,9 +124,32 @@ class InformationController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function postStore()
 	{
-		//
+		$request = \Request::all();
+		// $validationError = $this->language->validationForm(['request'=>$request]);
+		// if($validationError) {
+		// 	return \Response::json($validationError);
+		// }
+
+		// DB::beginTransaction();
+		// try {
+		// 	$zoneDatas = [
+		// 		'country_id'	=> $request['country_id'],
+		// 		'name'			=> $request['name'],
+		// 		'code'			=> $request['code'],
+		// 		'status'		=> $request['status']
+		// 	];
+		// 	$zone = $this->zone->create($zoneDatas);
+		// 	DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save zone successfully!', 'post'=>$request];
+			return \Response::json($return);
+		// } catch (Exception $e) {
+		// 	DB::rollback();
+		// 	echo $e->getMessage();
+		// 	exit();
+		// }
+		// exit();
 	}
 
 	/**

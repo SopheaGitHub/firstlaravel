@@ -14,7 +14,4 @@
 		</div>
 	</div>
 </div>
-<form>
-	<textarea name="text" id="input_text"></textarea>
-</form>
 @endsection
