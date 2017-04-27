@@ -39,7 +39,7 @@
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-description<?php echo $language->language_id; ?>"><?php echo $data->entry_description; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="information_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="form-control"></textarea>
+                      <textarea name="information_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="text_summernote form-control"></textarea>
                     </div>
                   </div>
                   <div class="form-group required">
@@ -67,13 +67,13 @@
 
             <div class="tab-pane" id="tab-data">
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="help_keyword"><?php echo $data->entry_keyword; ?></span></label>
+                <label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $data->title_keyword; ?>"><?php echo $data->entry_keyword; ?></span></label>
                 <div class="col-sm-10">
                   <input type="text" name="keyword" value="" placeholder="<?php echo $data->entry_keyword; ?>" id="input-keyword" class="form-control" />
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="input-bottom"><span data-toggle="tooltip" title="help_bottom"><?php echo $data->entry_bottom; ?></span></label>
+                <label class="col-sm-2 control-label" for="input-bottom"><span data-toggle="tooltip" title="<?php echo $data->title_bottom; ?>"><?php echo $data->entry_bottom; ?></span></label>
                 <div class="col-sm-10">
                   <div class="checkbox">
                     <label>
@@ -112,20 +112,12 @@
                 <label class="col-sm-2 control-label" for="input-sort-order"><?php echo $data->entry_layout; ?></label>
                 <div class="col-sm-10">
                   <select name="information_layout[0]" class="form-control">
-                    <option value=""></option>
-                    <option value="6">Account</option>
-                    <option value="10">Affiliate</option>
-                    <option value="3">Category</option>
-                    <option value="7">Checkout</option>
-                    <option value="12">Compare</option>
-                    <option value="8">Contact</option>
-                    <option value="4">Default</option>
-                    <option value="1">Home</option>
-                    <option value="11">Information</option>
-                    <option value="5">Manufacturer</option>
-                    <option value="2">Product</option>
-                    <option value="13">Search</option>
-                    <option value="9">Sitemap</option>
+                    <option value="0"></option>
+                    <?php
+                      foreach ($data->layouts as $layout_id => $layout_name) { ?>
+                        <option value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
+                    <?php  }
+                    ?>
                   </select>
                 </div>
               </div>
@@ -150,6 +142,11 @@ $('#input-description<?php echo $language->language_id; ?>').summernote({
 $('#language a:first').tab('show');
 </script>
 <script type="text/javascript">
+$(document).on('mouseover', '#submit-information', function(e) {
+  <?php foreach ($data->languages as $language) { ?>
+    $('#input-description<?php echo $language->language_id; ?>').val($('#input-description<?php echo $language->language_id; ?>').code());
+  <?php } ?>
+});
 $(document).ready(function() {
   requestSubmitForm('submit-information', 'form-information', "<?php echo $data->action; ?>");
 });

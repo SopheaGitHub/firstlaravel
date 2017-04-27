@@ -5,13 +5,20 @@
 <title><?php echo ((isset($data->web_title))? $data->web_title:''); ?></title>
 <base href="http://localhost/projects/firstlaravel/firstlaravel5/public/" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-<link type="text/css" href="<?php echo asset('/bootstrap/css/bootstrap.css'); ?>" rel="stylesheet" />
+<script type="text/javascript" src="<?php echo asset('/javascript/jquery/jquery-2.1.1.min.js'); ?>"></script>
+<script type="text/javascript" src="<?php echo asset('/javascript/bootstrap/js/bootstrap.min.js'); ?>"></script>
+<link href="<?php echo asset('/stylesheet/bootstrap.css'); ?>" type="text/css" rel="stylesheet" />
 <link type="text/css" href="<?php echo asset('/font-awesome/css/font-awesome.min.css'); ?>" rel="stylesheet" media="all">
-<link rel="stylesheet" href="<?php echo asset('/summernote/summernote.css'); ?>">
-<link type="text/css" href="<?php echo asset('/css/stylesheet.css'); ?>" rel="stylesheet" media="screen" />
+<link href="<?php echo asset('/javascript/summernote/summernote.css'); ?>" rel="stylesheet" />
+<script type="text/javascript" src="<?php echo asset('/javascript/summernote/summernote.js'); ?>"></script>
+<script src="<?php echo asset('/common.js'); ?>" type="text/javascript"></script>
+<link type="text/css" href="<?php echo asset('/stylesheet/stylesheet.css'); ?>" rel="stylesheet" media="screen" />
 <style type="text/css">
 	.form-group + .form-group {
 		border-top: none;
+	}
+	textarea > .hidden{
+	  	display:none;
 	}
 	#block-loader {
 	  /*position: absolute;*/
@@ -81,10 +88,7 @@
 	</div>
   	@include('templates.oc_footer')
 </div>
-<script src="<?php echo asset('/jquery/jquery.min.js'); ?>" type="text/javascript"></script>
-<script src="<?php echo asset('/bootstrap/js/bootstrap.min.js'); ?>" type="text/javascript"></script>
-<script src="<?php echo asset('/summernote/summernote.js'); ?>"></script>
-<script src="<?php echo asset('/common.js'); ?>" type="text/javascript"></script>
+<script type="text/javascript">$('#block-loader').hide();</script>
 @yield('script')
 </body>
 </html>

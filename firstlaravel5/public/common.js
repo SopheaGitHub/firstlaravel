@@ -166,6 +166,7 @@ function requestSubmitForm(buttonId, formId, formAction) {
 	          		if(data.action!='edit') {
 	            		$("form#"+formId)[0].reset();
 	          		}
+	          		$('.text_summernote').code('');
 	        	}
 
 	        	$('#message').html(msg).show();
@@ -316,7 +317,7 @@ $(document).ready(function() {
 	});
 
 	// Override summernotes image manager
-	$('button[data-event=\'showImageDialog\']').attr('data-toggle', 'image').removeAttr('data-event');
+	$('button[data-original-title=\'Picture\']').attr('data-toggle', 'image').removeAttr('data-event');
 
 	$(document).delegate('button[data-toggle=\'image\']', 'click', function() {
 		$('#modal-image').remove();

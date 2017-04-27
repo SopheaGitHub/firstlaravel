@@ -4,8 +4,11 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Information;
 use App\Models\Language;
+use App\Models\Layout;
+use App\Models\UrlAlias;
 
 use Illuminate\Http\Request;
+use DB;
 
 class InformationController extends Controller {
 
@@ -21,8 +24,10 @@ class InformationController extends Controller {
 		$this->middleware('auth');
 
 		$this->data = new \stdClass();
-		$this->information = New Information();
+		$this->information = new Information();
 		$this->language = new Language();
+		$this->layout = new Layout();
+		$this->url_alias = new UrlAlias();
 		$this->data->web_title = 'Information';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -93,8 +98,8 @@ class InformationController extends Controller {
 			$url .= '&page='.$request['page'];
 		}
 
-		$this->data->sort_title = '?sort=id.title'.$url;
-		$this->data->sort_sort_order = '?sort=i.sort_order'.$url;
+		$this->data->sort_title = '?sort=title'.$url;
+		$this->data->sort_sort_order = '?sort=sort_order'.$url;
 
 		// define column
 		$this->data->column_title = "Information Title";
@@ -127,29 +132,49 @@ class InformationController extends Controller {
 	public function postStore()
 	{
 		$request = \Request::all();
-		// $validationError = $this->language->validationForm(['request'=>$request]);
-		// if($validationError) {
-		// 	return \Response::json($validationError);
-		// }
+		$validationError = $this->information->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
 
-		// DB::beginTransaction();
-		// try {
-		// 	$zoneDatas = [
-		// 		'country_id'	=> $request['country_id'],
-		// 		'name'			=> $request['name'],
-		// 		'code'			=> $request['code'],
-		// 		'status'		=> $request['status']
-		// 	];
-		// 	$zone = $this->zone->create($zoneDatas);
-		// 	DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save zone successfully!', 'post'=>$request];
+		DB::beginTransaction();
+		try {
+			$informationDatas = [
+				'bottom'		=> ((isset($request['bottom']))? $request['bottom']:''),
+				'sort_order'	=> $request['sort_order'],
+				'status'		=> $request['status']
+			];
+			$information = $this->information->create($informationDatas);
+
+			$information_descriptionDatas = [
+				'information_id'		=> $information->id,
+				'information_description_datas'	=> $request['information_description']
+			];
+
+			$information_description = $this->information->insertInformationDescription($information_descriptionDatas);
+
+			$url_aliasDatas = [
+				'query'		=> 'information_id='.$information->id,
+				'keyword'	=> $request['keyword']
+			];
+			$url_alias = $this->url_alias->create($url_aliasDatas);
+
+			$information_to_layoutDatas['information_to_layout_datas'][] = [
+				'information_id'		=> $information->id,
+				'website_id'			=> '1',
+				'layout_id'	=> $request['information_layout'][0]
+			];
+
+			$information_to_layout = $this->information->insertInformationToLayout($information_to_layoutDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save information successfully!'];
 			return \Response::json($return);
-		// } catch (Exception $e) {
-		// 	DB::rollback();
-		// 	echo $e->getMessage();
-		// 	exit();
-		// }
-		// exit();
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -169,9 +194,27 @@ class InformationController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($information_id)
 	{
-		//
+		$this->data->information = $this->information->getInformation($information_id);
+		$this->data->information_descriptions = $this->information->getInformationDescriptions($information_id);
+		$this->data->information_to_layouts = $this->information->getInformationToLayouts($information_id);
+		echo '<pre>';
+			print_r($this->data->information);
+		echo '</pre>';
+		echo '<pre>';
+			print_r($this->data->information_descriptions);
+		echo '</pre>';
+		echo '<pre>';
+			print_r($this->data->information_to_layouts);
+		echo '</pre>';
+		$datas = [
+			'action' => url('/information/update/'.$information_id),
+			'titlelist'	=> 'Edit Information',
+			'information' => $this->data->information
+		];
+		echo $this->getInformationForm($datas);
+		exit();
 	}
 
 	/**
@@ -199,6 +242,7 @@ class InformationController extends Controller {
 	public function getInformationForm($datas=[]) {
 		$this->data->go_back = url('/information');
 		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
+		$this->data->layouts = $this->layout->orderBy('name', 'asc')->lists('name', 'layout_id');
 		$this->data->status = [
 			'1' => 'Enabled',
 			'0'	=> 'Disabled'
@@ -224,7 +268,8 @@ class InformationController extends Controller {
 		$this->data->entry_layout = 'Layout';
 
 		// define input title
-		$this->data->title_password = 'Must be enter at least 6 characters, Ex:@As!02';
+		$this->data->title_keyword = 'Do not use spaces, instead replace spaces with - and make sure the keyword is globally unique.';
+		$this->data->title_bottom = 'Display in the bottom footer.';
 
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
