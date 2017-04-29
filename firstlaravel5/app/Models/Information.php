@@ -90,6 +90,18 @@ class Information extends Model {
 		DB::connection()->getPdo()->exec($sql);
 	}
 
+	public function deletedInformationDescription($information_id) {
+		DB::table('information_description')->where('information_id', '=', $information_id)->delete();
+	}
+
+	public function deletedUrlAlias($information_id) {
+		DB::table('url_alias')->where('query', '=', 'information_id='.$information_id)->delete();
+	}
+
+	public function deletedInformationToLayout($information_id) {
+		DB::table('information_to_layout')->where('information_id', '=', $information_id)->delete();
+	}
+
 	public function validationForm($datas=[]) {
 		$this->language = new Language();
 		$languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();

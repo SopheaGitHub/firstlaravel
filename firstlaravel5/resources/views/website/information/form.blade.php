@@ -33,31 +33,31 @@
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-title<?php echo $language->language_id; ?>"><?php echo $data->entry_title; ?></label>
                     <div class="col-sm-10">
-                      <input type="text" name="information_description[<?php echo $language->language_id; ?>][title]" value="" placeholder="<?php echo $data->entry_title; ?>" id="input-title<?php echo $language->language_id; ?>" class="form-control" />
+                      <input type="text" name="information_description[<?php echo $language->language_id; ?>][title]" value="<?php echo $data->information_description[$language->language_id]['title']; ?>" placeholder="<?php echo $data->entry_title; ?>" id="input-title<?php echo $language->language_id; ?>" class="form-control" />
                     </div>
                   </div>
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-description<?php echo $language->language_id; ?>"><?php echo $data->entry_description; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="information_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="text_summernote form-control"></textarea>
+                      <textarea name="information_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="text_summernote form-control"><?php echo $data->information_description[$language->language_id]['description']; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-meta-title<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_title; ?></label>
                     <div class="col-sm-10">
-                      <input type="text" name="information_description[<?php echo $language->language_id; ?>][meta_title]" value="" placeholder="<?php echo $data->entry_meta_title; ?>" id="input-meta-title<?php echo $language->language_id; ?>" class="form-control" />
+                      <input type="text" name="information_description[<?php echo $language->language_id; ?>][meta_title]" value="<?php echo $data->information_description[$language->language_id]['meta_title']; ?>" placeholder="<?php echo $data->entry_meta_title; ?>" id="input-meta-title<?php echo $language->language_id; ?>" class="form-control" />
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-meta-description<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_description; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="information_description[<?php echo $language->language_id; ?>][meta_description]" rows="5" placeholder="<?php echo $data->entry_meta_description; ?>" id="input-meta-description<?php echo $language->language_id; ?>" class="form-control"></textarea>
+                      <textarea name="information_description[<?php echo $language->language_id; ?>][meta_description]" rows="5" placeholder="<?php echo $data->entry_meta_description; ?>" id="input-meta-description<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->information_description[$language->language_id]['meta_description']; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-meta-keyword<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_keyword; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="information_description[<?php echo $language->language_id; ?>][meta_keyword]" rows="5" placeholder="<?php echo $data->entry_meta_keyword; ?>" id="input-meta-keyword<?php echo $language->language_id; ?>" class="form-control"></textarea>
+                      <textarea name="information_description[<?php echo $language->language_id; ?>][meta_keyword]" rows="5" placeholder="<?php echo $data->entry_meta_keyword; ?>" id="input-meta-keyword<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->information_description[$language->language_id]['meta_description']; ?></textarea>
                     </div>
                   </div>
                 </div>
@@ -69,7 +69,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $data->title_keyword; ?>"><?php echo $data->entry_keyword; ?></span></label>
                 <div class="col-sm-10">
-                  <input type="text" name="keyword" value="" placeholder="<?php echo $data->entry_keyword; ?>" id="input-keyword" class="form-control" />
+                  <input type="text" name="keyword" value="<?php echo ((isset($data->keyword))? $data->keyword:''); ?>" placeholder="<?php echo $data->entry_keyword; ?>" id="input-keyword" class="form-control" />
                 </div>
               </div>
               <div class="form-group">
@@ -77,7 +77,7 @@
                 <div class="col-sm-10">
                   <div class="checkbox">
                     <label>
-                      <?php if (isset($bottom)) { ?>
+                      <?php if ($data->bottom=='1') { ?>
                       <input type="checkbox" name="bottom" value="1" checked="checked" id="input-bottom" />
                       <?php } else { ?>
                       <input type="checkbox" name="bottom" value="1" id="input-bottom" />
@@ -92,7 +92,7 @@
                   <select name="status" id="input-status" class="form-control" />
                     <?php
                       foreach ($data->status as $key => $status) { ?>
-                        <option value="<?php echo $key; ?>"><?php echo $status; ?></option>
+                        <option <?php echo (($key == $data->information_status)? 'selected="selected"':''); ?> value="<?php echo $key; ?>"><?php echo $status; ?></option>
                       <?php }
                     ?>
                   </select>
@@ -101,7 +101,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-sort-order"><?php echo $data->entry_sort_order; ?></label>
                 <div class="col-sm-10">
-                  <input type="text" name="sort_order" value="" placeholder="<?php echo $data->entry_sort_order; ?>" id="input-sort-order" class="form-control" />
+                  <input type="text" name="sort_order" value="<?php echo ((isset($data->sort_order))? $data->sort_order:''); ?>" placeholder="<?php echo $data->entry_sort_order; ?>" id="input-sort-order" class="form-control" />
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@
                     <option value="0"></option>
                     <?php
                       foreach ($data->layouts as $layout_id => $layout_name) { ?>
-                        <option value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
+                        <option <?php echo ((count($data->information_layout) > 0)? (($layout_id == $data->information_layout[0]->layout_id)? 'selected="selected"':''):''); ?> value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
                     <?php  }
                     ?>
                   </select>

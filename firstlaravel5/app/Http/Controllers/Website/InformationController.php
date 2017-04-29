@@ -199,19 +199,12 @@ class InformationController extends Controller {
 		$this->data->information = $this->information->getInformation($information_id);
 		$this->data->information_descriptions = $this->information->getInformationDescriptions($information_id);
 		$this->data->information_to_layouts = $this->information->getInformationToLayouts($information_id);
-		echo '<pre>';
-			print_r($this->data->information);
-		echo '</pre>';
-		echo '<pre>';
-			print_r($this->data->information_descriptions);
-		echo '</pre>';
-		echo '<pre>';
-			print_r($this->data->information_to_layouts);
-		echo '</pre>';
 		$datas = [
 			'action' => url('/information/update/'.$information_id),
 			'titlelist'	=> 'Edit Information',
-			'information' => $this->data->information
+			'information' => $this->data->information,
+			'information_descriptions' => $this->data->information_descriptions,
+			'information_to_layouts' => $this->data->information_to_layouts
 		];
 		echo $this->getInformationForm($datas);
 		exit();
@@ -223,9 +216,55 @@ class InformationController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($information_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->information->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$informationDatas = [
+				'bottom'		=> ((isset($request['bottom']))? $request['bottom']:''),
+				'sort_order'	=> $request['sort_order'],
+				'status'		=> $request['status']
+			];
+			$information = $this->information->where('information_id', '=', $information_id)->update($informationDatas);
+
+			$clear_information_description = $this->information->deletedInformationDescription($information_id);
+			$information_descriptionDatas = [
+				'information_id'		=> $information_id,
+				'information_description_datas'	=> $request['information_description']
+			];
+
+			$information_description = $this->information->insertInformationDescription($information_descriptionDatas);
+
+			$clear_url_alias = $this->information->deletedUrlAlias($information_id);
+			$url_aliasDatas = [
+				'query'		=> 'information_id='.$information_id,
+				'keyword'	=> $request['keyword']
+			];
+			$url_alias = $this->url_alias->create($url_aliasDatas);
+
+			$clear_information_to_layout = $this->information->deletedInformationToLayout($information_id);
+			$information_to_layoutDatas['information_to_layout_datas'][] = [
+				'information_id'		=> $information_id,
+				'website_id'			=> '1',
+				'layout_id'	=> $request['information_layout'][0]
+			];
+
+			$information_to_layout = $this->information->insertInformationToLayout($information_to_layoutDatas);
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save information successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -270,6 +309,42 @@ class InformationController extends Controller {
 		// define input title
 		$this->data->title_keyword = 'Do not use spaces, instead replace spaces with - and make sure the keyword is globally unique.';
 		$this->data->title_bottom = 'Display in the bottom footer.';
+
+		if(isset($datas['information'])) {
+			$this->data->bottom = $datas['information']->bottom;
+			$this->data->sort_order = $datas['information']->sort_order;
+			$this->data->information_status = $datas['information']->status;
+			$this->data->keyword = $datas['information']->keyword;
+		}else {
+			$this->data->bottom = '';
+			$this->data->sort_order = '';
+			$this->data->information_status = '1';
+			$this->data->keyword = '';
+		}
+
+		if(isset($datas['information_descriptions'])) {
+			foreach ($datas['information_descriptions'] as $description) {
+				$this->data->information_description[$description->language_id]['title'] = $description->title;
+				$this->data->information_description[$description->language_id]['description'] = $description->description;
+				$this->data->information_description[$description->language_id]['meta_title'] = $description->meta_title;
+				$this->data->information_description[$description->language_id]['meta_description'] = $description->meta_description;
+				$this->data->information_description[$description->language_id]['meta_keyword'] = $description->meta_keyword;
+			}
+		}else {
+			foreach ($this->data->languages as $language) {
+				$this->data->information_description[$language->language_id]['title'] = '';
+				$this->data->information_description[$language->language_id]['description'] = '';
+				$this->data->information_description[$language->language_id]['meta_title'] = '';
+				$this->data->information_description[$language->language_id]['meta_description'] = '';
+				$this->data->information_description[$language->language_id]['meta_keyword'] = '';
+			}
+		}
+
+		if(isset($datas['information_to_layouts'])) {
+			$this->data->information_layout = $datas['information_to_layouts'];
+		}else {
+			$this->data->information_layout = [];
+		}
 
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');

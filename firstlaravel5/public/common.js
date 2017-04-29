@@ -165,8 +165,8 @@ function requestSubmitForm(buttonId, formId, formAction) {
 	          		msg += '</div>';
 	          		if(data.action!='edit') {
 	            		$("form#"+formId)[0].reset();
+	            		$('.text_summernote').code('');
 	          		}
-	          		$('.text_summernote').code('');
 	        	}
 
 	        	$('#message').html(msg).show();
