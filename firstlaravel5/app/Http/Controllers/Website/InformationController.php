@@ -55,13 +55,13 @@ class InformationController extends Controller {
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'title';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -317,7 +317,7 @@ class InformationController extends Controller {
 			$this->data->keyword = $datas['information']->keyword;
 		}else {
 			$this->data->bottom = '';
-			$this->data->sort_order = '';
+			$this->data->sort_order = '0';
 			$this->data->information_status = '1';
 			$this->data->keyword = '';
 		}

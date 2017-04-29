@@ -1,8 +1,8 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use DB;
 use App\Models\Language;
+use DB;
 
 class Information extends Model {
 

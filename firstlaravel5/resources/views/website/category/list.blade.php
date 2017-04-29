@@ -7,14 +7,14 @@
                 <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
               </td>
         			<td class="text-left">
-                <?php if ($data->sort == 'cd.name') { ?>
+                <?php if ($data->sort == 'name') { ?>
                   <a href="#" data-sort="<?php echo $data->sort_name; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_name; ?></a>
                 <?php } else { ?>
                   <a href="#" data-sort="<?php echo $data->sort_name; ?>" class="order"><?php echo $data->column_name; ?></a>
                 <?php } ?>
               </td>
         			<td class="text-left">
-                <?php if ($data->sort == 'c.sort_order') { ?>
+                <?php if ($data->sort == 'sort_order') { ?>
                   <a href="#" data-sort="<?php echo $data->sort_sort_order; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_sort_order; ?></a>
                 <?php } else { ?>
                   <a href="#" data-sort="<?php echo $data->sort_sort_order; ?>" class="order"><?php echo $data->column_sort_order; ?></a>

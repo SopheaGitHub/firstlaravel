@@ -9,6 +9,7 @@ use App\Models\UrlAlias;
 use App\Http\Controllers\Common\FilemanagerController;
 
 use Illuminate\Http\Request;
+use DB;
 
 class CategoriesController extends Controller {
 
@@ -57,13 +58,13 @@ class CategoriesController extends Controller {
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -100,8 +101,8 @@ class CategoriesController extends Controller {
 			$url .= '&page='.$request['page'];
 		}
 
-		$this->data->sort_name = '?sort=cd.name'.$url;
-		$this->data->sort_sort_order = '?sort=c.sort_order'.$url;
+		$this->data->sort_name = '?sort=name'.$url;
+		$this->data->sort_sort_order = '?sort=sort_order'.$url;
 
 		// define column
 		$this->data->column_name = "Category Name";
@@ -134,49 +135,59 @@ class CategoriesController extends Controller {
 	public function postStore()
 	{
 		$request = \Request::all();
-		// $validationError = $this->information->validationForm(['request'=>$request]);
-		// if($validationError) {
-		// 	return \Response::json($validationError);
-		// }
+		$validationError = $this->category->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
 
-		// DB::beginTransaction();
-		// try {
-		// 	$informationDatas = [
-		// 		'bottom'		=> ((isset($request['bottom']))? $request['bottom']:''),
-		// 		'sort_order'	=> $request['sort_order'],
-		// 		'status'		=> $request['status']
-		// 	];
-		// 	$information = $this->information->create($informationDatas);
+		DB::beginTransaction();
+		try {
+			$categoryDatas = [
+				'image'		=> $request['image'],
+				'parent_id'	=> $request['parent_id'],
+				'top'		=> ((isset($request['top']))? $request['top']:''),
+				'column'	=> $request['column'],
+				'sort_order'=> $request['sort_order'],
+				'status'	=> $request['status']
+			];
+			$category = $this->category->create($categoryDatas);
 
-		// 	$information_descriptionDatas = [
-		// 		'information_id'		=> $information->id,
-		// 		'information_description_datas'	=> $request['information_description']
-		// 	];
+			$category_descriptionDatas = [
+				'category_id'		=> $category->id,
+				'category_description_datas'	=> $request['category_description']
+			];
 
-		// 	$information_description = $this->information->insertInformationDescription($information_descriptionDatas);
+			$category_description = $this->category->insertCategoryDescription($category_descriptionDatas);
 
-		// 	$url_aliasDatas = [
-		// 		'query'		=> 'information_id='.$information->id,
-		// 		'keyword'	=> $request['keyword']
-		// 	];
-		// 	$url_alias = $this->url_alias->create($url_aliasDatas);
+			$url_aliasDatas = [
+				'query'		=> 'category_id='.$category->id,
+				'keyword'	=> $request['keyword']
+			];
+			$url_alias = $this->url_alias->create($url_aliasDatas);
 
-		// 	$information_to_layoutDatas['information_to_layout_datas'][] = [
-		// 		'information_id'		=> $information->id,
-		// 		'website_id'			=> '1',
-		// 		'layout_id'	=> $request['information_layout'][0]
-		// 	];
+			$category_to_layoutDatas['category_to_layout_datas'][] = [
+				'category_id'		=> $category->id,
+				'website_id'			=> '1',
+				'layout_id'	=> $request['category_layout'][0]
+			];
 
-		// 	$information_to_layout = $this->information->insertInformationToLayout($information_to_layoutDatas);
-		// 	DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save information successfully!', 'post'=>$request];
+			$category_to_layout = $this->category->insertCategoryToLayout($category_to_layoutDatas);
+
+			$category_pathDatas = [
+				'category_id' => $category->id,
+				'parent_id'	=> $request['parent_id']
+			];
+			$category_path = $this->category->insertCategoryPath($category_pathDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save category successfully!', 'post'=>$request];
 			return \Response::json($return);
-		// } catch (Exception $e) {
-		// 	DB::rollback();
-		// 	echo $e->getMessage();
-		// 	exit();
-		// }
-		// exit();
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -196,9 +207,20 @@ class CategoriesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($category_id)
 	{
-		//
+		$this->data->category = $this->category->getCategory($category_id);
+		$this->data->category_descriptions = $this->category->getCategoryDescriptions($category_id);
+		$this->data->category_to_layouts = $this->category->getCategoryToLayouts($category_id);
+		$datas = [
+			'action' => url('/categories/update/'.$category_id),
+			'titlelist'	=> 'Edit category',
+			'category' => $this->data->category,
+			'category_descriptions' => $this->data->category_descriptions,
+			'category_to_layouts' => $this->data->category_to_layouts
+		];
+		echo $this->getCategoryForm($datas);
+		exit();
 	}
 
 	/**
@@ -224,7 +246,8 @@ class CategoriesController extends Controller {
 	}
 
 	public function getCategoryForm($datas=[]) {
-		$this->data->go_back = url('/information');
+		$this->data->go_autocomplete = url('/categories/autocomplete');
+		$this->data->go_back = url('/categories');
 		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
 		$this->data->layouts = $this->layout->orderBy('name', 'asc')->lists('name', 'layout_id');
 		$this->data->status = [
@@ -238,7 +261,7 @@ class CategoriesController extends Controller {
 		$data['tab_design'] = 'Design';
 
 		// define entry
-		$this->data->entry_title = 'Category Title';
+		$this->data->entry_name = 'Category Name';
 		$this->data->entry_description = 'Description';
 		$this->data->entry_meta_title = 'Meta Tag Title';
 		$this->data->entry_meta_description = 'Meta Tag Description';
@@ -259,48 +282,50 @@ class CategoriesController extends Controller {
 		$this->data->title_top = 'Display in the top menu bar. Only works for the top parent categories.';
 		$this->data->title_column = 'Number of columns to use for the bottom 3 categories. Only works for the top parent categories.';
 
-		if(isset($datas['information'])) {
-			$this->data->parent_id = $datas['information']->parent_id;
-			$this->data->path = $datas['information']->path;
-			$this->data->image = $datas['information']->image;
-			$this->data->top = $datas['information']->top;
-			$this->data->column = $datas['information']->column;
-			$this->data->sort_order = $datas['information']->sort_order;
-			$this->data->information_status = $datas['information']->status;
-			$this->data->keyword = $datas['information']->keyword;
+		$this->data->text_none = '-- None --';
+
+		if(isset($datas['category'])) {
+			$this->data->parent_id = $datas['category']->parent_id;
+			$this->data->path = $datas['category']->path;
+			$this->data->image = $datas['category']->image;
+			$this->data->top = $datas['category']->top;
+			$this->data->column = $datas['category']->column;
+			$this->data->sort_order = $datas['category']->sort_order;
+			$this->data->category_status = $datas['category']->status;
+			$this->data->keyword = $datas['category']->keyword;
 		}else {
-			$this->data->parent_id = '0';
+			$this->data->parent_id = '';
 			$this->data->path = '';
 			$this->data->image = '';
 			$this->data->top = '';
 			$this->data->column = '1';
-			$this->data->sort_order = '';
-			$this->data->information_status = '1';
+			$this->data->sort_order = '0';
+			$this->data->category_status = '1';
 			$this->data->keyword = '';
 		}
 
-		if(isset($datas['information_descriptions'])) {
-			foreach ($datas['information_descriptions'] as $description) {
-				$this->data->information_description[$description->language_id]['title'] = $description->title;
-				$this->data->information_description[$description->language_id]['description'] = $description->description;
-				$this->data->information_description[$description->language_id]['meta_title'] = $description->meta_title;
-				$this->data->information_description[$description->language_id]['meta_description'] = $description->meta_description;
-				$this->data->information_description[$description->language_id]['meta_keyword'] = $description->meta_keyword;
+		if(isset($datas['category_descriptions'])) {
+			foreach ($datas['category_descriptions'] as $description) {
+				$this->data->category_description[$description->language_id]['name'] = $description->name;
+				$this->data->category_description[$description->language_id]['description'] = $description->description;
+				$this->data->category_description[$description->language_id]['meta_title'] = $description->meta_title;
+				$this->data->category_description[$description->language_id]['meta_description'] = $description->meta_description;
+				$this->data->category_description[$description->language_id]['meta_keyword'] = $description->meta_keyword;
 			}
 		}else {
 			foreach ($this->data->languages as $language) {
-				$this->data->information_description[$language->language_id]['title'] = '';
-				$this->data->information_description[$language->language_id]['description'] = '';
-				$this->data->information_description[$language->language_id]['meta_title'] = '';
-				$this->data->information_description[$language->language_id]['meta_description'] = '';
-				$this->data->information_description[$language->language_id]['meta_keyword'] = '';
+				$this->data->category_description[$language->language_id]['name'] = '';
+				$this->data->category_description[$language->language_id]['description'] = '';
+				$this->data->category_description[$language->language_id]['meta_title'] = '';
+				$this->data->category_description[$language->language_id]['meta_description'] = '';
+				$this->data->category_description[$language->language_id]['meta_keyword'] = '';
 			}
 		}
 
-		if(isset($datas['information_to_layouts'])) {
-			$this->data->information_layout = $datas['information_to_layouts'];
+		if(isset($datas['category_to_layouts'])) {
+			$this->data->category_layout = $datas['category_to_layouts'];
 		}else {
-			$this->data->information_layout = [];
+			$this->data->category_layout = [];
 		}
 
 		if ($this->data->image && is_file($this->data->dir_image . $this->data->image)) {
@@ -315,6 +340,41 @@ class CategoriesController extends Controller {
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
 		return view('website.category.form', ['data' => $this->data]);
+	}
+
+	public function getAutocomplete() {
+		$request = \Request::all();
+		$json = array();
+
+		if (isset($request['filter_name'])) {
+
+			$filter_data = array(
+				'filter_name' => $request['filter_name'],
+				'sort'        => 'name',
+				'order'       => 'ASC',
+				'start'       => 0,
+				'limit'       => 5
+			);
+
+			$results = $this->category->getAutocompleteCategories($filter_data);
+
+			foreach ($results as $result) {
+				$json[] = array(
+					'category_id' => $result->category_id,
+					'name'        => strip_tags(html_entity_decode($result->name, ENT_QUOTES, 'UTF-8'))
+				);
+			}
+		}
+
+		$sort_order = array();
+
+		foreach ($json as $key => $value) {
+			$sort_order[$key] = $value['name'];
+		}
+
+		array_multisort($sort_order, SORT_ASC, $json);
+
+		return json_encode($json);
 	}
 
 }
