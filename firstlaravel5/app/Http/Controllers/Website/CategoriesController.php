@@ -7,6 +7,7 @@ use App\Models\Language;
 use App\Models\Layout;
 use App\Models\UrlAlias;
 use App\Http\Controllers\Common\FilemanagerController;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -30,12 +31,13 @@ class CategoriesController extends Controller {
 		$this->layout = new Layout();
 		$this->url_alias = new UrlAlias();
 		$this->filemanager = new FilemanagerController();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Categories';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'category'	=> ['text' => 'Categories', 'href' => url('categories')]
 		];
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = $this->config->dir_image;
 	}
 
 	/**
@@ -45,6 +47,7 @@ class CategoriesController extends Controller {
 	 */
 	public function getIndex()
 	{
+		echo $this->data->dir_image;
 		$this->data->actionlist = url('/categories/list');
 		$this->data->add_category = url('/categories/create');
 		return view('website.category.index', ['data' => $this->data]);

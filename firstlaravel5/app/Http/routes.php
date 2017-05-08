@@ -34,6 +34,14 @@ Route::group(['namespace' => 'Website'], function()
 	]);
 });
 
+// controllers/website/design
+Route::group(['namespace' => 'Website\Design'], function()
+{
+	Route::controllers([
+		'banners' 		=> 'BannersController',
+	]);
+});
+
 // controllers/system
 Route::group(['namespace' => 'System'], function()
 {
