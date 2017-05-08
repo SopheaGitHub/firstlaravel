@@ -89,7 +89,7 @@
               <div class="form-group">
                 <label class="col-sm-2 control-label"><?php echo $data->entry_status; ?></label>
                 <div class="col-sm-10">
-                  <select name="status" id="input-status" class="form-control" />
+                  <select name="status" id="input-status" class="form-control">
                     <?php
                       foreach ($data->status as $key => $status) { ?>
                         <option <?php echo (($key == $data->information_status)? 'selected="selected"':''); ?> value="<?php echo $key; ?>"><?php echo $status; ?></option>

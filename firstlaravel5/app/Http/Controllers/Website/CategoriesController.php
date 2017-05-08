@@ -180,7 +180,7 @@ class CategoriesController extends Controller {
 			$category_path = $this->category->insertCategoryPath($category_pathDatas);
 
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save category successfully!', 'post'=>$request];
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save category successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -229,9 +229,66 @@ class CategoriesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($category_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->category->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$categoryDatas = [
+				'image'		=> $request['image'],
+				'parent_id'	=> $request['parent_id'],
+				'top'		=> ((isset($request['top']))? $request['top']:''),
+				'column'	=> $request['column'],
+				'sort_order'=> $request['sort_order'],
+				'status'	=> $request['status']
+			];
+			$category = $this->category->where('category_id', '=', $category_id)->update($categoryDatas);
+
+			$clear_category_description = $this->category->deletedCategoryDescription($category_id);
+			$category_descriptionDatas = [
+				'category_id'		=> $category_id,
+				'category_description_datas'	=> $request['category_description']
+			];
+
+			$category_description = $this->category->insertCategoryDescription($category_descriptionDatas);
+
+			$clear_url_alias = $this->category->deletedUrlAlias($category_id);
+			$url_aliasDatas = [
+				'query'		=> 'category_id='.$category_id,
+				'keyword'	=> $request['keyword']
+			];
+			$url_alias = $this->url_alias->create($url_aliasDatas);
+
+			$clear_category_to_layout = $this->category->deletedCategoryToLayout($category_id);
+			$category_to_layoutDatas['category_to_layout_datas'][] = [
+				'category_id'		=> $category_id,
+				'website_id'			=> '1',
+				'layout_id'	=> $request['category_layout'][0]
+			];
+
+			$category_to_layout = $this->category->insertCategoryToLayout($category_to_layoutDatas);
+
+			$clear_category_path = $this->category->deletedCategoryPath($category_id);
+			$category_pathDatas = [
+				'category_id' => $category_id,
+				'parent_id'	=> $request['parent_id']
+			];
+			$category_path = $this->category->insertCategoryPath($category_pathDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save category successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**

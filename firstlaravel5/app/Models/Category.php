@@ -10,9 +10,9 @@ class Category extends Model {
 	protected $fillable = ['image', 'parent_id', 'top', 'column', 'sort_order', 'status'];
 
 	public function getCategory($category_id) {
-		$result = DB::table(DB::raw('
+		$db = DB::table(DB::raw('
 				(SELECT DISTINCT
-					c.*, (
+					c.*, cd2.name, (
 						SELECT
 							GROUP_CONCAT(
 								cd1. NAME
@@ -45,7 +45,8 @@ class Category extends Model {
 				)
 				WHERE
 					c.category_id = \''.$category_id.'\') AS category
-			'))->first();
+			'));
+		$result = $db->first();
 		return $result;
 	}
 
@@ -166,6 +167,22 @@ class Category extends Model {
 
 		$sql .= "INSERT INTO `category_path` SET `category_id` = '" . $datas['category_id'] . "', `path_id` = '" . $datas['category_id'] . "', `level` = '" . $level . "'; ";
 		DB::connection()->getPdo()->exec($sql);
+	}
+
+	public function deletedCategoryDescription($category_id) {
+		DB::table('category_description')->where('category_id', '=', $category_id)->delete();
+	}
+
+	public function deletedUrlAlias($category_id) {
+		DB::table('url_alias')->where('query', '=', 'category_id='.$category_id)->delete();
+	}
+
+	public function deletedCategoryToLayout($category_id) {
+		DB::table('category_to_layout')->where('category_id', '=', $category_id)->delete();
+	}
+
+	public function deletedCategoryPath($category_id) {
+		DB::table('category_path')->where('category_id', '=', $category_id)->delete();
 	}
 
 	public function validationForm($datas=[]) {

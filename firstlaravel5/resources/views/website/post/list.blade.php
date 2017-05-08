@@ -7,24 +7,10 @@
                 <input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" />
               </td>
         			<td class="text-left">
-                <?php if ($data->sort == 'post_title') { ?>
+                <?php if ($data->sort == 'title') { ?>
                   <a href="#" data-sort="<?php echo $data->sort_title; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_title; ?></a>
                 <?php } else { ?>
                   <a href="#" data-sort="<?php echo $data->sort_title; ?>" class="order"><?php echo $data->column_title; ?></a>
-                <?php } ?>
-              </td>
-        			<td class="text-left">
-                <?php if ($data->sort == 'post_type_name') { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_post_type; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_post_type; ?></a>
-                <?php } else { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_post_type; ?>" class="order"><?php echo $data->column_post_type; ?></a>
-                <?php } ?>
-              </td>
-              <td class="text-left">
-                <?php if ($data->sort == 'category_name') { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_categories; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_categories; ?></a>
-                <?php } else { ?>
-                  <a href="#" data-sort="<?php echo $data->sort_categories; ?>" class="order"><?php echo $data->column_categories; ?></a>
                 <?php } ?>
               </td>
               <td class="text-left">
@@ -32,6 +18,13 @@
                   <a href="#" data-sort="<?php echo $data->sort_author_name; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_author_name; ?></a>
                 <?php } else { ?>
                   <a href="#" data-sort="<?php echo $data->sort_author_name; ?>" class="order"><?php echo $data->column_author_name; ?></a>
+                <?php } ?>
+              </td>
+              <td class="text-left">
+                <?php if ($data->sort == 'status') { ?>
+                  <a href="#" data-sort="<?php echo $data->sort_status; ?>" class="order <?php echo strtolower($data->order); ?>"><?php echo $data->column_status; ?></a>
+                <?php } else { ?>
+                  <a href="#" data-sort="<?php echo $data->sort_status; ?>" class="order"><?php echo $data->column_status; ?></a>
                 <?php } ?>
               </td>
         			<td class="text-right"><?php echo $data->column_action; ?></td>
@@ -43,10 +36,9 @@
       					foreach ($data->posts as $post) { ?>
       						<tr>
               			<td class="text-center"><input type="checkbox" name="selected[]" value="<?php echo $post->post_id; ?>" /></td>
-              			<td class="text-left"><?php echo $post->post_title; ?></td>
-                    <td class="text-left"><?php echo $post->post_type_name; ?></td>
-                    <td class="text-left"><?php echo $post->category_name; ?></td>
+              			<td class="text-left"><?php echo $post->title; ?></td>
                     <td class="text-left"><?php echo $post->author_name; ?></td>
+                    <td class="text-left"><?php echo $post->status; ?></td>
               			<td class="text-right"><a href="<?php echo $data->edit_post; ?>/<?php echo $post->post_id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a></td>
             		  </tr>
       					<?php } 

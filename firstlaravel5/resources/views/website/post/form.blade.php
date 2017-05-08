@@ -1,6 +1,6 @@
 @extends('templates.oc_template')
 @section('button_pull_right')
-<button type="button" id="submit-category" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
+<button type="button" id="submit-post" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
 <a href="<?php echo $data->go_back; ?>" data-toggle="tooltip" title="Go Back" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i>
 </a>
 @endsection
@@ -13,12 +13,13 @@
       <div class="panel-body">
         <p id="message"></p>
         
-        <form action="#" method="post" enctype="multipart/form-data" id="form-category" class="form-horizontal">
+        <form action="#" method="post" enctype="multipart/form-data" id="form-post" class="form-horizontal">
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
           <ul class="nav nav-tabs">
-            <li class="active"><a href="#tab-general" data-toggle="tab">General</a></li>
-            <li><a href="#tab-data" data-toggle="tab">Data</a></li>
-            <li><a href="#tab-design" data-toggle="tab">Design</a></li>
+            <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $data->tab_general; ?></a></li>
+            <li><a href="#tab-data" data-toggle="tab"><?php echo $data->tab_data; ?></a></li>
+            <li><a href="#tab-links" data-toggle="tab"><?php echo $data->tab_links; ?></a></li>
+            <li><a href="#tab-design" data-toggle="tab"><?php echo $data->tab_design; ?></a></li>
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab-general">
@@ -31,33 +32,39 @@
                 <?php foreach ($data->languages as $language) { ?>
                 <div class="tab-pane" id="language<?php echo $language->language_id; ?>">
                   <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-name<?php echo $language->language_id; ?>"><?php echo $data->entry_name; ?></label>
+                    <label class="col-sm-2 control-label" for="input-title<?php echo $language->language_id; ?>"><?php echo $data->entry_title; ?></label>
                     <div class="col-sm-10">
-                      <input type="text" name="category_description[<?php echo $language->language_id; ?>][name]" value="<?php echo $data->category_description[$language->language_id]['name']; ?>" placeholder="<?php echo $data->entry_name; ?>" id="input-name<?php echo $language->language_id; ?>" class="form-control" />
+                      <input type="text" name="post_description[<?php echo $language->language_id; ?>][title]" value="<?php echo $data->post_description[$language->language_id]['title']; ?>" placeholder="<?php echo $data->entry_title; ?>" id="input-title<?php echo $language->language_id; ?>" class="form-control" />
                     </div>
                   </div>
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-description<?php echo $language->language_id; ?>"><?php echo $data->entry_description; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="category_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="text_summernote form-control"><?php echo $data->category_description[$language->language_id]['description']; ?></textarea>
+                      <textarea name="post_description[<?php echo $language->language_id; ?>][description]" placeholder="<?php echo $data->entry_description; ?>" id="input-description<?php echo $language->language_id; ?>" class="text_summernote form-control"><?php echo $data->post_description[$language->language_id]['description']; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group required">
                     <label class="col-sm-2 control-label" for="input-meta-title<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_title; ?></label>
                     <div class="col-sm-10">
-                      <input type="text" name="category_description[<?php echo $language->language_id; ?>][meta_title]" value="<?php echo $data->category_description[$language->language_id]['meta_title']; ?>" placeholder="<?php echo $data->entry_meta_title; ?>" id="input-meta-title<?php echo $language->language_id; ?>" class="form-control" />
+                      <input type="text" name="post_description[<?php echo $language->language_id; ?>][meta_title]" value="<?php echo $data->post_description[$language->language_id]['meta_title']; ?>" placeholder="<?php echo $data->entry_meta_title; ?>" id="input-meta-title<?php echo $language->language_id; ?>" class="form-control" />
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-meta-description<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_description; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="category_description[<?php echo $language->language_id; ?>][meta_description]" rows="5" placeholder="<?php echo $data->entry_meta_description; ?>" id="input-meta-description<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->category_description[$language->language_id]['meta_description']; ?></textarea>
+                      <textarea name="post_description[<?php echo $language->language_id; ?>][meta_description]" rows="5" placeholder="<?php echo $data->entry_meta_description; ?>" id="input-meta-description<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->post_description[$language->language_id]['meta_description']; ?></textarea>
                     </div>
                   </div>
                   <div class="form-group">
                     <label class="col-sm-2 control-label" for="input-meta-keyword<?php echo $language->language_id; ?>"><?php echo $data->entry_meta_keyword; ?></label>
                     <div class="col-sm-10">
-                      <textarea name="category_description[<?php echo $language->language_id; ?>][meta_keyword]" rows="5" placeholder="<?php echo $data->entry_meta_keyword; ?>" id="input-meta-keyword<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->category_description[$language->language_id]['meta_description']; ?></textarea>
+                      <textarea name="post_description[<?php echo $language->language_id; ?>][meta_keyword]" rows="5" placeholder="<?php echo $data->entry_meta_keyword; ?>" id="input-meta-keyword<?php echo $language->language_id; ?>" class="form-control"><?php echo $data->post_description[$language->language_id]['meta_description']; ?></textarea>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-tag<?php echo $language->language_id; ?>"><span data-toggle="tooltip" title="comma separated"><?php echo $data->entry_tag; ?></span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="post_description[<?php echo $language->language_id; ?>][tag]" value="<?php echo $data->post_description[$language->language_id]['tag']; ?>" placeholder="<?php echo $data->entry_tag; ?>" id="input-tag<?php echo $language->language_id; ?>" class="form-control" />
                     </div>
                   </div>
                 </div>
@@ -66,13 +73,6 @@
             </div>
 
             <div class="tab-pane" id="tab-data">
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="input-parent"><?php echo $data->entry_parent; ?></label>
-                <div class="col-sm-10">
-                  <input type="text" name="path" value="<?php echo $data->path; ?>" placeholder="<?php echo $data->entry_parent; ?>" id="input-parent" class="form-control" />
-                  <input type="hidden" name="parent_id" value="<?php echo $data->parent_id; ?>" />
-                </div>
-              </div>
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-keyword"><span data-toggle="tooltip" title="<?php echo $data->title_keyword; ?>"><?php echo $data->entry_keyword; ?></span></label>
                 <div class="col-sm-10">
@@ -86,32 +86,12 @@
                 </div>
               </div>
               <div class="form-group">
-                <label class="col-sm-2 control-label" for="input-top"><span data-toggle="tooltip" title="" data-original-title="<?php echo $data->title_top; ?>"><?php echo $data->entry_top; ?></span></label>
-                <div class="col-sm-10">
-                  <div class="checkbox">
-                    <label>
-                      <?php if ($data->top=='1') { ?>
-                      <input type="checkbox" name="top" value="1" checked="checked" id="input-top" />
-                      <?php } else { ?>
-                      <input type="checkbox" name="top" value="1" id="input-top" />
-                      <?php } ?>
-                      &nbsp; </label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-2 control-label" for="input-column"><span data-toggle="tooltip" title="<?php echo $data->title_column; ?>"><?php echo $data->entry_column; ?></span></label>
-                <div class="col-sm-10">
-                  <input type="text" name="column" value="<?php echo $data->column; ?>" placeholder="<?php echo $data->entry_column; ?>" id="input-column" class="form-control" />
-                </div>
-              </div>
-              <div class="form-group">
                 <label class="col-sm-2 control-label"><?php echo $data->entry_status; ?></label>
                 <div class="col-sm-10">
                   <select name="status" id="input-status" class="form-control">
                     <?php
                       foreach ($data->status as $key => $status) { ?>
-                        <option <?php echo (($key == $data->category_status)? 'selected="selected"':''); ?> value="<?php echo $key; ?>"><?php echo $status; ?></option>
+                        <option <?php echo (($key == $data->post_status)? 'selected="selected"':''); ?> value="<?php echo $key; ?>"><?php echo $status; ?></option>
                       <?php }
                     ?>
                   </select>
@@ -125,16 +105,31 @@
               </div>
             </div>
 
+            <div class="tab-pane" id="tab-links">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-category"><span data-toggle="tooltip" title="" data-original-title="<?php echo $data->title_category; ?>"><?php echo $data->entry_category; ?></span></label>
+                <div class="col-sm-10">
+                  <input type="text" name="category" value="" placeholder="<?php echo $data->entry_category; ?>" id="input-category" class="form-control" />
+                  <div id="post-category" class="well well-sm" style="height: 150px; overflow: auto;">
+                    <?php foreach ($data->post_categories as $post_category) { ?>
+                    <div id="post-category<?php echo $post_category['category_id']; ?>"><i class="fa fa-minus-circle"></i> <?php echo $post_category['name']; ?>
+                      <input type="hidden" name="post_category[]" value="<?php echo $post_category['category_id']; ?>" />
+                    </div>
+                    <?php } ?>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div class="tab-pane" id="tab-design">
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-sort-order"><?php echo $data->entry_layout; ?></label>
                 <div class="col-sm-10">
-                  <select name="category_layout[0]" class="form-control">
+                  <select name="post_layout[0]" class="form-control">
                     <option value="0"></option>
                     <?php
                       foreach ($data->layouts as $layout_id => $layout_name) { ?>
-                        <option <?php echo ((count($data->category_layout) > 0)? (($layout_id == $data->category_layout[0]->layout_id)? 'selected="selected"':''):''); ?> value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
+                        <option <?php echo ((count($data->post_layout) > 0)? (($layout_id == $data->post_layout[0]->layout_id)? 'selected="selected"':''):''); ?> value="<?php echo $layout_id; ?>"><?php echo $layout_name; ?></option>
                     <?php  }
                     ?>
                   </select>
@@ -158,17 +153,13 @@ $('#input-description<?php echo $language->language_id; ?>').summernote({
 <?php } ?>
 //--></script>
 <script type="text/javascript"><!--
-$('input[name=\'path\']').autocomplete({
+// Category
+$('input[name=\'category\']').autocomplete({
   'source': function(request, response) {
     $.ajax({
       url: '<?php echo $data->go_autocomplete;?>?filter_name=' +  encodeURIComponent(request),
       dataType: 'json',
       success: function(json) {
-        json.unshift({
-          category_id: 0,
-          name: '<?php echo $data->text_none; ?>'
-        });
-
         response($.map(json, function(item) {
           return {
             label: item['name'],
@@ -179,22 +170,30 @@ $('input[name=\'path\']').autocomplete({
     });
   },
   'select': function(item) {
-    $('input[name=\'path\']').val(item['label']);
-    $('input[name=\'parent_id\']').val(item['value']);
+    $('input[name=\'category\']').val('');
+
+    $('#post-category' + item['value']).remove();
+
+    $('#post-category').append('<div id="post-category' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="post_category[]" value="' + item['value'] + '" /></div>');
   }
 });
-//--></script> 
+
+$('#post-category').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+});
+
+//--></script>
 <script type="text/javascript">
 $('#language a:first').tab('show');
 </script>
 <script type="text/javascript">
-$(document).on('mouseover', '#submit-category', function(e) {
+$(document).on('mouseover', '#submit-post', function(e) {
   <?php foreach ($data->languages as $language) { ?>
     $('#input-description<?php echo $language->language_id; ?>').val($('#input-description<?php echo $language->language_id; ?>').code());
   <?php } ?>
 });
 $(document).ready(function() {
-  requestSubmitForm('submit-category', 'form-category', "<?php echo $data->action; ?>");
+  requestSubmitForm('submit-post', 'form-post', "<?php echo $data->action; ?>");
 });
 </script>
 @endsection
