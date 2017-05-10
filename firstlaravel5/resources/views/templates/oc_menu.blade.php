@@ -22,7 +22,11 @@
         <li><a href="<?php echo url('/categories') ?>">Categories</a></li>
         <li><a href="<?php echo url('/posts') ?>">Posts</a></li>
         <li><a href="<?php echo url('/information') ?>">Information</a></li>
-        <li><a href="<?php echo url('/modules') ?>">Modules</a></li>
+        <li><a class="parent">Extension</a>
+          <ul>
+            <li><a href="<?php echo url('/modules'); ?>">Modules</a></li>
+          </ul>
+        </li>
         <li><a class="parent">Design</a>
           <ul>
             <li><a href="<?php echo url('/layouts'); ?>">Layouts</a></li>

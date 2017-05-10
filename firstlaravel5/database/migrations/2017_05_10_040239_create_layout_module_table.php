@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateBannerImageTable extends Migration {
+class CreateLayoutModuleTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,12 +12,12 @@ class CreateBannerImageTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('banner_image', function(Blueprint $table)
+		Schema::create('layout_module', function(Blueprint $table)
 		{
-			$table->increments('banner_image_id');
-			$table->integer('banner_id');
-			$table->string('link', 255);
-			$table->string('image', 255);
+			$table->increments('layout_module_id');
+			$table->integer('layout_id');
+			$table->string('code', 64);
+			$table->string('position', 14);
 			$table->integer('sort_order')->default(0);
 		});
 	}
@@ -29,7 +29,7 @@ class CreateBannerImageTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('banner_image');
+		Schema::drop('layout_module');
 	}
 
 }

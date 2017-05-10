@@ -29,12 +29,12 @@
                 foreach ($data->banners as $banner) { ?>
                   <tr>
                     <td class="text-center">
-                      <input type="checkbox" name="selected[]" value="<?php echo $banner->id; ?>" />
+                      <input type="checkbox" name="selected[]" value="<?php echo $banner->banner_id; ?>" />
                     </td>
                     <td class="text-left"><?php echo $banner->name; ?></td>
                     <td class="text-left"><?php echo $banner->status; ?></td>
                     <td class="text-right">
-                      <a href="<?php echo $data->edit_banner; ?>/<?php echo $banner->id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
+                      <a href="<?php echo $data->edit_banner; ?>/<?php echo $banner->banner_id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
                     </td>
                   </tr>
                 <?php } 

@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class ConfigController extends Controller {
 
-	public $dir_image = "C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/"; 
+	// image path
+	public $dir_image = "C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/";
+
+	// application path
+	public $dir_application_http = "C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/app/Http/";
+
+	// system status
+	public $status = ['1' => 'Enabled', '0'	=> 'Disabled'];
 
 }

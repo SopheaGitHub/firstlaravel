@@ -34,11 +34,20 @@ Route::group(['namespace' => 'Website'], function()
 	]);
 });
 
+// controllers/website/extension
+Route::group(['namespace' => 'Website\Extension'], function()
+{
+	Route::controllers([
+		'modules' 		=> 'ModulesController',
+	]);
+});
+
 // controllers/website/design
 Route::group(['namespace' => 'Website\Design'], function()
 {
 	Route::controllers([
 		'banners' 		=> 'BannersController',
+		'layouts' 		=> 'LayoutsController',
 	]);
 });
 
@@ -75,3 +84,15 @@ Route::controllers([
 	'auth' => 'Auth\AuthController',
 	'password' => 'Auth\PasswordController',
 ]);
+
+// =========== loading modules ============= //
+// controllers/module
+// start with route /module/..
+Route::group(['namespace' => 'Module'], function()
+{
+	Route::controllers([
+		'module/account' 		=> 'ModuleAccountController',
+		'module/banner' 		=> 'ModuleBannerController'
+	]);
+});
+// =========== End loading modules ========= //

@@ -47,7 +47,6 @@ class CategoriesController extends Controller {
 	 */
 	public function getIndex()
 	{
-		echo $this->data->dir_image;
 		$this->data->actionlist = url('/categories/list');
 		$this->data->add_category = url('/categories/create');
 		return view('website.category.index', ['data' => $this->data]);
