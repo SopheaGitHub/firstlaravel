@@ -9,7 +9,7 @@ use App\Http\Controllers\ConfigController;
 use Illuminate\Http\Request;
 use DB;
 
-class ModuleBannerController extends Controller {
+class ModuleSlideshowController extends Controller {
 
 	protected $data = null;
 
@@ -26,11 +26,11 @@ class ModuleBannerController extends Controller {
 		$this->banner = new Banner();
 		$this->module = new Module();
 		$this->config = new ConfigController();
-		$this->data->web_title = 'Banner';
+		$this->data->web_title = 'Slideshow';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'module'=> ['text' => 'Modules', 'href' => url('modules')],
-			'banner'=> ['text' => 'Banner', 'href' => url('module/banner/create')]
+			'slideshow'=> ['text' => 'slideshow', 'href' => url('module/slideshow/create')]
 		];
 	}
 
@@ -52,10 +52,10 @@ class ModuleBannerController extends Controller {
 	public function getCreate()
 	{
 		$datas = [
-			'action' => url('/module/banner/store'),
-			'titlelist'	=> 'Add Banner Module'
+			'action' => url('/module/slideshow/store'),
+			'titlelist'	=> 'Add Slideshow Module'
 		];
-		echo $this->getModuleBannerForm($datas);
+		echo $this->getModuleSlideshowForm($datas);
 		exit();
 	}
 
@@ -76,13 +76,13 @@ class ModuleBannerController extends Controller {
 		try {
 			$moduleDatas = [
 				'name'		=> $request['name'],
-				'code'		=> 'banner',
+				'code'		=> 'slideshow',
 				'setting'	=> json_encode(\Request::except('_token')),
 			];
 			$module = $this->module->create($moduleDatas);
 
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save banner module successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save slideshow module successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -113,11 +113,11 @@ class ModuleBannerController extends Controller {
 	{
 		$this->data->module = $this->module->getModule($module_id);	
 		$datas = [
-			'action' => url('/module/banner/update/'.$module_id),
-			'titlelist'	=> 'Edit Banner Module',
+			'action' => url('/module/slideshow/update/'.$module_id),
+			'titlelist'	=> 'Edit Slideshow Module',
 			'module' => $this->data->module
 		];
-		echo $this->getModuleBannerForm($datas);
+		echo $this->getModuleSlideshowForm($datas);
 		exit();
 	}
 
@@ -145,7 +145,7 @@ class ModuleBannerController extends Controller {
 			$module = $this->module->where('module_id', '=', $module_id)->update($moduleDatas);
 
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save banner module successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save slideshow module successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -166,7 +166,7 @@ class ModuleBannerController extends Controller {
 		//
 	}
 
-	public function getModuleBannerForm($datas=[]) {
+	public function getModuleSlideshowForm($datas=[]) {
 		$this->data->go_back = url('/modules');
 		$this->data->banners = $this->banner->getBanners(['sort'=>'name', 'order'=>'asc'])->get()->toArray();
 
@@ -196,7 +196,7 @@ class ModuleBannerController extends Controller {
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
-		return view('module.banner.form', ['data' => $this->data]);
+		return view('module.slideshow.form', ['data' => $this->data]);
 	}
 
 	public function validationForm($datas=[]) {
@@ -218,7 +218,7 @@ class ModuleBannerController extends Controller {
 
 		$validator = \Validator::make($datas['request'], $rules, $messages);
 		if ($validator->fails()) {
-			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save banner module unsuccessfully!','validatormsg'=>$validator->messages()];
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save slideshow module unsuccessfully!','validatormsg'=>$validator->messages()];
         }
 		return $error;
 	}

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Module;
+use DB;
 
 class Extension extends Model {
 
@@ -24,6 +25,15 @@ class Extension extends Model {
 	public function getModulesByCode($code) {
 		$result = Module::where('code', '=', $code)->orderBy('name', 'asc')->get()->toArray();
 		return $result;
+	}
+
+	public function installExtension($type, $code) {
+		$extension = Extension::create(['type'=>$type, 'code'=>$code]);
+		return $extension;
+	}
+
+	public function uninstallExtension($type, $code) {
+		DB::table('extension')->where('type', '=', $type)->where('code', '=', $code)->delete();
 	}
 
 }

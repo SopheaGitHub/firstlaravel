@@ -421,4 +421,39 @@ class PostsController extends Controller {
 		return view('website.post.form', ['data' => $this->data]);
 	}
 
+	public function getAutocomplete() {
+		$request = \Request::all();
+		$json = array();
+
+		if (isset($request['filter_title'])) {
+
+			$filter_data = array(
+				'filter_title' => $request['filter_title'],
+				'sort'        => 'title',
+				'order'       => 'ASC',
+				'start'       => 0,
+				'limit'       => 5
+			);
+
+			$results = $this->post->getAutocompletePosts($filter_data);
+
+			foreach ($results as $result) {
+				$json[] = array(
+					'post_id' => $result->post_id,
+					'title'        => strip_tags(html_entity_decode($result->title, ENT_QUOTES, 'UTF-8'))
+				);
+			}
+		}
+
+		$sort_order = array();
+
+		foreach ($json as $key => $value) {
+			$sort_order[$key] = $value['title'];
+		}
+
+		array_multisort($sort_order, SORT_ASC, $json);
+
+		return json_encode($json);
+	}
+
 }

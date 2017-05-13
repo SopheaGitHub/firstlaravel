@@ -1,6 +1,6 @@
 @extends('templates.oc_template')
 @section('button_pull_right')
-<button type="button" id="submit-module-banner" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
+<button type="button" id="submit-module-carousel" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
 <a href="<?php echo $data->go_back; ?>" data-toggle="tooltip" title="Go Back" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i>
 </a>
 @endsection
@@ -12,7 +12,7 @@
       </div>
       <div class="panel-body">
         <p id="message"></p>
-        <form action="#" method="post" enctype="multipart/form-data" id="form-module-banner" class="form-horizontal">
+        <form action="#" method="post" enctype="multipart/form-data" id="form-module-carousel" class="form-horizontal">
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
@@ -21,17 +21,22 @@
             </div>
           </div>
           <div class="form-group">
-            <label class="col-sm-2 control-label" for="input-banner"><?php echo $data->entry_banner; ?></label>
+            <label class="col-sm-2 control-label" for="input-post"><?php echo $data->entry_post; ?></label>
             <div class="col-sm-10">
-              <select name="banner_id" id="input-banner" class="form-control">
-                <?php foreach ($data->banners as $banner) { ?>
-                <?php if ($banner['banner_id'] == $data->banner_id) { ?>
-                <option value="<?php echo $banner['banner_id']; ?>" selected="selected"><?php echo $banner['name']; ?></option>
-                <?php } else { ?>
-                <option value="<?php echo $banner['banner_id']; ?>"><?php echo $banner['name']; ?></option>
+              <input type="text" name="post" value="" placeholder="<?php echo $data->entry_post; ?>" id="input-post" class="form-control" />
+              <div id="featured-post" class="well well-sm" style="height: 150px; overflow: auto;">
+                <?php foreach ($data->posts as $post) { ?>
+                <div id="featured-post<?php echo $post['post_id']; ?>"><i class="fa fa-minus-circle"></i> <?php echo $post['title']; ?>
+                  <input type="hidden" name="post[]" value="<?php echo $post['post_id']; ?>" />
+                </div>
                 <?php } ?>
-                <?php } ?>
-              </select>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-limit"><?php echo $data->entry_limit; ?></label>
+            <div class="col-sm-10">
+              <input type="text" name="limit" value="<?php echo $data->limit; ?>" placeholder="<?php echo $data->entry_limit; ?>" id="input-limit" class="form-control" />
             </div>
           </div>
           <div class="form-group required">
@@ -67,7 +72,36 @@
 @section('script')
 <script type="text/javascript"><!--
 $(document).ready(function() {
-  requestSubmitForm('submit-module-banner', 'form-module-banner', "<?php echo $data->action; ?>");
+  requestSubmitForm('submit-module-carousel', 'form-module-carousel', "<?php echo $data->action; ?>");
 });
 </script>
+<script type="text/javascript"><!--
+$('input[name=\'post\']').autocomplete({
+  source: function(request, response) {
+    $.ajax({
+      url: '<?php echo $data->go_autocomplete;?>?filter_title=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['title'],
+            value: item['post_id']
+          }
+        }));
+      }
+    });
+  },
+  select: function(item) {
+    $('input[name=\'post\']').val('');
+    
+    $('#featured-post' + item['value']).remove();
+    
+    $('#featured-post').append('<div id="featured-post' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="post[]" value="' + item['value'] + '" /></div>');  
+  }
+});
+  
+$('#featured-post').delegate('.fa-minus-circle', 'click', function() {
+  $(this).parent().remove();
+});
+//--></script>
 @endsection

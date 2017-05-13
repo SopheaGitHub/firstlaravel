@@ -22,6 +22,10 @@ class Setting extends Model {
 		}
 		DB::connection()->getPdo()->exec($sql);
 	}
+
+	public function destroySetting($code, $website_id = 1) {
+		DB::table('setting')->where('website_id', '=', $website_id)->where('code', '=', $code)->delete();
+	}
 	
 	public function validationForm($datas=[]) {
 		$error = false;

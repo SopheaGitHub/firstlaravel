@@ -1,4 +1,18 @@
 @extends('templates.oc_template')
+@section('message')
+  <?php
+    if(Session::get('success')) { ?>
+      <div class="alert alert-success" id="success"><i class="fa fa-check-circle"></i> <?php echo Session::get('success'); ?>
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+  <?php } ?>
+  <?php
+    if(Session::get('error')) { ?>
+      <div class="alert alert-danger" id="error"><i class="fa fa-times"></i> <?php echo Session::get('error'); ?>
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+      </div>
+  <?php } ?>
+@endsection
 @section('content')
 <div class="container-fluid">
   <div class="panel panel-default">

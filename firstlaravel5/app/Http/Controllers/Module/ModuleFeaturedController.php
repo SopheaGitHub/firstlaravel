@@ -2,14 +2,14 @@
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use App\Models\Banner;
 use App\Models\Module;
+use App\Models\Post;
 use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
 
-class ModuleBannerController extends Controller {
+class ModuleFeaturedController extends Controller {
 
 	protected $data = null;
 
@@ -23,14 +23,14 @@ class ModuleBannerController extends Controller {
 		$this->middleware('auth');
 
 		$this->data = new \stdClass();
-		$this->banner = new Banner();
 		$this->module = new Module();
+		$this->post = new Post();
 		$this->config = new ConfigController();
-		$this->data->web_title = 'Banner';
+		$this->data->web_title = 'Featured';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'module'=> ['text' => 'Modules', 'href' => url('modules')],
-			'banner'=> ['text' => 'Banner', 'href' => url('module/banner/create')]
+			'featured'=> ['text' => 'Featured', 'href' => url('module/featured/create')]
 		];
 	}
 
@@ -52,10 +52,10 @@ class ModuleBannerController extends Controller {
 	public function getCreate()
 	{
 		$datas = [
-			'action' => url('/module/banner/store'),
-			'titlelist'	=> 'Add Banner Module'
+			'action' => url('/module/featured/store'),
+			'titlelist'	=> 'Add Featured Module'
 		];
-		echo $this->getModuleBannerForm($datas);
+		echo $this->getModuleFeaturedForm($datas);
 		exit();
 	}
 
@@ -76,13 +76,13 @@ class ModuleBannerController extends Controller {
 		try {
 			$moduleDatas = [
 				'name'		=> $request['name'],
-				'code'		=> 'banner',
+				'code'		=> 'featured',
 				'setting'	=> json_encode(\Request::except('_token')),
 			];
 			$module = $this->module->create($moduleDatas);
 
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save banner module successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save featured module successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -113,11 +113,11 @@ class ModuleBannerController extends Controller {
 	{
 		$this->data->module = $this->module->getModule($module_id);	
 		$datas = [
-			'action' => url('/module/banner/update/'.$module_id),
-			'titlelist'	=> 'Edit Banner Module',
+			'action' => url('/module/featured/update/'.$module_id),
+			'titlelist'	=> 'Edit Featured Module',
 			'module' => $this->data->module
 		];
-		echo $this->getModuleBannerForm($datas);
+		echo $this->getModuleFeaturedForm($datas);
 		exit();
 	}
 
@@ -145,7 +145,7 @@ class ModuleBannerController extends Controller {
 			$module = $this->module->where('module_id', '=', $module_id)->update($moduleDatas);
 
 			DB::commit();
-			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save banner module successfully!'];
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save featured module successfully!'];
 			return \Response::json($return);
 		} catch (Exception $e) {
 			DB::rollback();
@@ -166,28 +166,43 @@ class ModuleBannerController extends Controller {
 		//
 	}
 
-	public function getModuleBannerForm($datas=[]) {
+	public function getModuleFeaturedForm($datas=[]) {
 		$this->data->go_back = url('/modules');
-		$this->data->banners = $this->banner->getBanners(['sort'=>'name', 'order'=>'asc'])->get()->toArray();
+		$this->data->go_autocomplete = url('/posts/autocomplete');
 
 		// define entry
 		$this->data->entry_name = 'Module Name';
-		$this->data->entry_banner = 'Banner';
+		$this->data->entry_post = 'Posts';
+		$this->data->entry_limit = 'Limit';
 		$this->data->entry_width = 'Width';
 		$this->data->entry_height = 'Height';
 		$this->data->entry_status = 'Status';
 
 		if(isset($datas['module'])) {
 			$this->data->name = $datas['module']['name'];
-			$this->data->banner_id = $datas['module']['banner_id'];
+			$posts = $datas['module']['post'];
+
+			foreach ($posts as $post_id) {
+				$post_info = $this->post->getPost($post_id);
+
+				if ($post_info) {
+					$this->data->posts[] = [
+						'post_id' => $post_info->post_id,
+						'title'   => $post_info->title
+					];
+				}
+			}
+
+			$this->data->limit = $datas['module']['limit'];
 			$this->data->width = $datas['module']['width'];
 			$this->data->height = $datas['module']['height'];
 			$this->data->module_status = $datas['module']['status'];
 		}else {
 			$this->data->name = '';
-			$this->data->banner_id = '';
-			$this->data->width = '';
-			$this->data->height = '';
+			$this->data->posts = [];
+			$this->data->limit = 5;
+			$this->data->width = 200;
+			$this->data->height = 200;
 			$this->data->module_status = 0;
 		}
 
@@ -196,7 +211,7 @@ class ModuleBannerController extends Controller {
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');
 
-		return view('module.banner.form', ['data' => $this->data]);
+		return view('module.featured.form', ['data' => $this->data]);
 	}
 
 	public function validationForm($datas=[]) {
@@ -218,7 +233,7 @@ class ModuleBannerController extends Controller {
 
 		$validator = \Validator::make($datas['request'], $rules, $messages);
 		if ($validator->fails()) {
-			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save banner module unsuccessfully!','validatormsg'=>$validator->messages()];
+			$error = ['error'=>'1','success'=>'0','msg'=>'Warning : save featured module unsuccessfully!','validatormsg'=>$validator->messages()];
         }
 		return $error;
 	}

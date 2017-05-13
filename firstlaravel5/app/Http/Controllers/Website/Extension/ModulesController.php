@@ -4,9 +4,11 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Module;
 use App\Models\Extension;
+use App\Models\Setting;
 use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
+use DB;
 
 class ModulesController extends Controller {
 
@@ -24,6 +26,7 @@ class ModulesController extends Controller {
 		$this->data = new \stdClass();
 		$this->module = new Module();
 		$this->extension = new Extension();
+		$this->setting = new Setting();
 		$this->config = new ConfigController();
 		$this->data->web_title = 'Modules';
 		$this->data->breadcrumbs = [
@@ -49,15 +52,15 @@ class ModulesController extends Controller {
 		$this->data->delete = url('extension/module/delete');
 		$extensions = $this->extension->getInstalled('module');
 
-		// foreach ($this->data->extension_modules as $key => $value) {
-		// 	if (!file_exists(DIR_APPLICATION . 'controller/module/' . $value . '.php')) {
-		// 		$this->model_extension_extension->uninstall('module', $value);
-
-		// 		unset($extensions[$key]);
-
-		// 		$this->model_extension_module->deleteModulesByCode($value);
-		// 	}
-		// }
+		foreach ($extensions as $key => $value) {
+			if (!file_exists($this->data->dir_application_http . 'Controllers/Module/Module'.$value.'Controller.php')) {
+				$this->extension->uninstallExtension('module', $value);
+				unset($extensions[$key]);
+				$this->module->destroyModulesByCode($value);
+				$this->setting->destroySetting($value);
+			}
+		}
+		
 
 		$data['extensions'] = array();
 		$files = glob($this->data->dir_application_http.'Controllers/Module/*.php');
@@ -74,15 +77,15 @@ class ModulesController extends Controller {
 						'module_id' => $module['module_id'],
 						'name'      => ucfirst($extension) . ' &gt; ' . $module['name'],
 						'edit'      => url('/module/' . $extension . '/edit/' . $module['module_id']),
-						'delete'    => url('/extension/module/delete/' . $module['module_id'])
+						'delete'    => url('/modules/destroy/' . $module['module_id'])
 					);
 				}
 
 				$data['extensions'][] = array(
 					'name'      => ucfirst($extension),
 					'module'    => $module_data,
-					'install'   => url('extension/module/install/' . $extension),
-					'uninstall' => url('extension/module/uninstall/' . $extension),
+					'install'   => url('/modules/install/' . $extension),
+					'uninstall' => url('/modules/uninstall/' . $extension),
 					'installed' => in_array($extension, $extensions),
 					'create'      => url('/module/' . $extension .'/create')
 				);
@@ -113,57 +116,34 @@ class ModulesController extends Controller {
 		return view('website.extension.module.list', ['data' => $this->data]);
 	}
 
-	/**
-	 * Show the form for creating a new resource.
-	 *
-	 * @return Response
-	 */
-	public function create()
-	{
-		//
+	public function getInstall($extension) {
+		DB::beginTransaction();
+		try {
+			$this->extension->installExtension('module', $extension);
+			DB::commit();
+			return Redirect('/modules')->with('success', 'Success: install module successfully!');
+		} catch (Exception $e) {
+			DB::rollback();
+			return Redirect('/modules')->with('error', 'Error: install module successfully!'.$e->getMessage());
+			exit();
+		}
+		exit();
 	}
 
-	/**
-	 * Store a newly created resource in storage.
-	 *
-	 * @return Response
-	 */
-	public function store()
-	{
-		//
-	}
-
-	/**
-	 * Display the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function show($id)
-	{
-		//
-	}
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update($id)
-	{
-		//
+	public function getUninstall($extension) {
+		DB::beginTransaction();
+		try {
+			$this->extension->uninstallExtension('module', $extension);
+			$this->module->destroyModulesByCode($extension);
+			$this->setting->destroySetting($extension);
+			DB::commit();
+			return Redirect('/modules')->with('success', 'Success: uninstall module successfully!');
+		} catch (Exception $e) {
+			DB::rollback();
+			return Redirect('/modules')->with('error', 'Error: uninstall module successfully!'.$e->getMessage());
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -172,9 +152,19 @@ class ModulesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function getDestroy($module_id)
 	{
-		//
+		DB::beginTransaction();
+		try {
+			$this->module->destroyModule($module_id);
+			DB::commit();
+			return Redirect('/modules')->with('success', 'Success: delete module successfully!');
+		} catch (Exception $e) {
+			DB::rollback();
+			return Redirect('/modules')->with('error', 'Error: delete module successfully!'.$e->getMessage());
+			exit();
+		}
+		exit();
 	}
 
 }

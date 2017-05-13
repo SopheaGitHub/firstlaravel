@@ -1,6 +1,6 @@
 @extends('templates.oc_template')
 @section('button_pull_right')
-<button type="button" id="submit-module-banner" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
+<button type="button" id="submit-module-carousel" data-toggle="tooltip" title="Save" class="btn btn-primary"><i class="fa fa-save"></i></button>
 <a href="<?php echo $data->go_back; ?>" data-toggle="tooltip" title="Go Back" class="btn btn-danger"><i class="fa fa-backward" aria-hidden="true"></i>
 </a>
 @endsection
@@ -12,7 +12,7 @@
       </div>
       <div class="panel-body">
         <p id="message"></p>
-        <form action="#" method="post" enctype="multipart/form-data" id="form-module-banner" class="form-horizontal">
+        <form action="#" method="post" enctype="multipart/form-data" id="form-module-carousel" class="form-horizontal">
           <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>">
           <div class="form-group required">
             <label class="col-sm-2 control-label" for="input-name"><?php echo $data->entry_name; ?></label>
@@ -67,7 +67,7 @@
 @section('script')
 <script type="text/javascript"><!--
 $(document).ready(function() {
-  requestSubmitForm('submit-module-banner', 'form-module-banner', "<?php echo $data->action; ?>");
+  requestSubmitForm('submit-module-carousel', 'form-module-carousel', "<?php echo $data->action; ?>");
 });
 </script>
 @endsection

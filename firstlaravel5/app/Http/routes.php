@@ -76,7 +76,7 @@ Route::group(['namespace' => 'System\Localisation'], function()
 		'currencies'	=> 'CurrenciesController',
 		'countries'		=> 'CountriesController',
 		'zones'			=> 'ZonesController',
-		'geo-zones'		=>	'GeoZonesController'
+		'geo-zones'		=> 'GeoZonesController'
 	]);
 });
 
@@ -91,8 +91,10 @@ Route::controllers([
 Route::group(['namespace' => 'Module'], function()
 {
 	Route::controllers([
-		'module/account' 		=> 'ModuleAccountController',
-		'module/banner' 		=> 'ModuleBannerController'
+		'module/banner' 		=> 'ModuleBannerController',
+		'module/carousel' 		=> 'ModuleCarouselController',
+		'module/featured' 		=> 'ModuleFeaturedController',
+		'module/slideshow' 		=> 'ModuleSlideshowController'
 	]);
 });
 // =========== End loading modules ========= //

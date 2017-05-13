@@ -20,6 +20,7 @@ class Post extends Model {
 						WHERE
 							QUERY = \'post_id=\'"'.$post_id.'"
 					) AS keyword
+					, (SELECT title FROM post_description AS pd WHERE pd.post_id = "'.$post_id.'" AND pd.language_id=\'1\') AS title
 				FROM
 					post
 				WHERE
@@ -72,6 +73,29 @@ class Post extends Model {
 
 	public function getPostCategories($post_id) {
 		$result = DB::table('post_to_category')->where('post_id', '=', $post_id)->get();
+		return $result;
+	}
+
+	public function getAutocompletePosts($filter_data=[]) {
+		$db = DB::table(DB::raw('
+				(
+					SELECT
+						p.post_id AS post_id,
+						p.created_at AS created_at,
+						pd.title AS title,
+						u.name AS author_name,
+						p.status AS status
+					FROM
+						post AS p
+					INNER JOIN users AS u ON u.id = p.author_id
+					LEFT JOIN post_description AS pd ON p.post_id = pd.post_id AND pd.language_id = \'1\'
+				) AS posts
+			'));
+		if ($filter_data['filter_title']!='') {
+			$db->where('title', 'like', '%'.$filter_data['filter_title'].'%');
+		}
+		$db->orderBy($filter_data['sort'], $filter_data['order'])->take($filter_data['limit']);
+		$result = $db->get();
 		return $result;
 	}
 

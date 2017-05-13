@@ -82,6 +82,7 @@
 	            		}
 	            	?>
 	            </ul>
+	            @yield('message')
 	    	</div>
 	  	</div>
 	  	@yield('content')
