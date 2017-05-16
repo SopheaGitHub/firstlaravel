@@ -1,4 +1,5 @@
-<form action="#" method="post" enctype="multipart/form-data" id="form-layout">
+<form action="<?php echo $data->action_delete; ?>" method="post" enctype="multipart/form-data" id="form-layout">
+  <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
           <thead>

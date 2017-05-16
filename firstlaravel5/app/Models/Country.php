@@ -17,6 +17,11 @@ class Country extends Model {
 		return $db;
 	}
 
+	public function destroyCountries($array_id) {
+		$result = Country::whereIn('country_id', $array_id)->delete();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

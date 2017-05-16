@@ -1,7 +1,7 @@
 @extends('templates.oc_template')
 @section('button_pull_right')
 <a href="<?php echo $data->add_zone; ?>" data-toggle="tooltip" title="Add New" class="btn btn-primary"><i class="fa fa-plus"></i></a>
-<button type="button" data-toggle="tooltip" title="Delete" class="btn btn-danger" onclick="confirm('Are you sure?') ? $('#form-user-group').submit() : false;"><i class="fa fa-trash-o"></i></button>
+<button type="button" data-toggle="tooltip" title="Delete" class="btn btn-danger" onclick="confirm('Are you sure?') ? $('#form-zone').submit() : false;"><i class="fa fa-trash-o"></i></button>
 @endsection
 @section('content')
 <div class="container-fluid">

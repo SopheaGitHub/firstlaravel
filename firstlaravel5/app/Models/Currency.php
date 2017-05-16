@@ -17,6 +17,11 @@ class Currency extends Model {
 		return $db;
 	}
 
+	public function destroyCurrencies($array_id) {
+		$result = Currency::whereIn('currency_id', $array_id)->delete();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

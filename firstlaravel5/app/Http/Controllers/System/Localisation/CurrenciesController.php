@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Currency;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -22,6 +23,7 @@ class CurrenciesController extends Controller {
 
 		$this->data = new \stdClass();
 		$this->currency = new Currency();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Currencies';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -44,18 +46,19 @@ class CurrenciesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_currency = url('/currencies/edit');
+		$this->data->action_delete = url('/currencies/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'title';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -230,18 +233,30 @@ class CurrenciesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayCurrencyID = $request['selected'];
+				$this->currency->destroyCurrencies($arrayCurrencyID);
+				DB::commit();
+				return Redirect('/currencies')->with('success', 'Success: delete currency successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/currencies')->with('error', 'Error: delete currency successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/currencies')->with('warning', 'Warning: there is no currency selected!');
+		}
+		exit();		
 	}
 
 	public function getCurrencyForm($datas=[]) {
 		$this->data->go_back = url('/currencies');
-
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_title = 'Currency Title';

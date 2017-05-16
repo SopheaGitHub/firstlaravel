@@ -83,6 +83,12 @@ class Banner extends Model {
 		DB::table('banner_image_description')->where('banner_id', '=', $banner_id)->delete();
 	}
 
+	public function destroyBanners($array_id) {
+		DB::table('banner')->whereIn('banner_id', $array_id)->delete();
+		DB::table('banner_image')->whereIn('banner_id', $array_id)->delete();
+		DB::table('banner_image_description')->whereIn('banner_id', $array_id)->delete();
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [
@@ -92,6 +98,15 @@ class Banner extends Model {
         $messages = [
         	'name.required' => 'The <b>Banner Name</b> field is required.',
         ];
+
+        if(isset($datas['request']['banner_image'])) {
+        	$i = 1;
+        	foreach($datas['request']['banner_image'] as $key => $val) {
+				$rules['banner_image.'.$key.'.sort_order'] = 'integer';
+				$messages['banner_image.'.$key.'.sort_order.integer'] = 'The <b>Banner Image ('.$i.') Sort Order </b> must be an integer.';
+				$i++;
+			}
+        }
 
 		$validator = \Validator::make($datas['request'], $rules, $messages);
 		if ($validator->fails()) {

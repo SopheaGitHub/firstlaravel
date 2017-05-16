@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Language;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -22,6 +23,7 @@ class LanguagesController extends Controller {
 
 		$this->data = new \stdClass();
 		$this->language = new Language();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Languages';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -44,18 +46,19 @@ class LanguagesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_language = url('/languages/edit');
+		$this->data->action_delete = url('/languages/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -228,18 +231,30 @@ class LanguagesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayLanguageID = $request['selected'];
+				$this->language->destroyLanguages($arrayLanguageID);
+				DB::commit();
+				return Redirect('/languages')->with('success', 'Success: delete language successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/languages')->with('error', 'Error: delete language successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/languages')->with('warning', 'Warning: there is no language selected!');
+		}
+		exit();		
 	}
 
 	public function getLanguageForm($datas=[]) {
 		$this->data->go_back = url('/languages');
-
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Language Name';

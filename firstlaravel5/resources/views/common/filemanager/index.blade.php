@@ -204,7 +204,7 @@ $('#button-folder').popover({
 $('#button-folder').on('shown.bs.popover', function() {
   $('#button-create').on('click', function() {
     $.ajax({
-      url: '/filemanager',
+      url: "<?php echo url('/filemanager/folder?_token="+CSRF_TOKEN+"&directory='.$data['directory']); ?>",
       type: 'post',
       dataType: 'json',
       data: 'folder=' + encodeURIComponent($('input[name=\'folder\']').val()),
@@ -235,7 +235,7 @@ $('#button-folder').on('shown.bs.popover', function() {
 $('#modal-image #button-delete').on('click', function(e) {
   if (confirm('<?php echo $data["text_confirm"]; ?>')) {
     $.ajax({
-      url: '/filemanager',
+      url: "<?php echo url('/filemanager/delete?_token="+CSRF_TOKEN+"'); ?>",
       type: 'post',
       dataType: 'json',
       data: $('input[name^=\'path\']:checked'),

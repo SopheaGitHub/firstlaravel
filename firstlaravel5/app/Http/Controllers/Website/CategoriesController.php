@@ -55,6 +55,7 @@ class CategoriesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_category = url('/categories/edit');
+		$this->data->action_delete = url('/categories/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
@@ -299,9 +300,25 @@ class CategoriesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayCategoryID = $request['selected'];
+				$this->category->destroyCategories($arrayCategoryID);
+				DB::commit();
+				return Redirect('/categories')->with('success', 'Success: delete category successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/categories')->with('error', 'Error: delete category successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/categories')->with('warning', 'Warning: there is no category selected!');
+		}
+		exit();		
 	}
 
 	public function getCategoryForm($datas=[]) {
@@ -309,10 +326,7 @@ class CategoriesController extends Controller {
 		$this->data->go_back = url('/categories');
 		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
 		$this->data->layouts = $this->layout->orderBy('name', 'asc')->lists('name', 'layout_id');
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define tap
 		$data['tab_general'] = 'General';

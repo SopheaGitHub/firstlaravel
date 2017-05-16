@@ -8,6 +8,7 @@ use App\Models\Layout;
 use App\Models\UrlAlias;
 use App\Models\Category;
 use App\Http\Controllers\Common\FilemanagerController;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -33,12 +34,13 @@ class PostsController extends Controller {
 		$this->url_alias = new UrlAlias();
 		$this->category = new Category();
 		$this->filemanager = new FilemanagerController();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Posts';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'post'	=> ['text' => 'Posts', 'href' => url('posts')]
 		];
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = $this->config->dir_image;
 	}
 
 	/**
@@ -56,18 +58,19 @@ class PostsController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_post = url('/posts/edit');
+		$this->data->action_delete = url('/posts/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'title';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -114,6 +117,8 @@ class PostsController extends Controller {
 		$this->data->column_author_name = "Author Name";
 		$this->data->column_status = "Status";
 		$this->data->column_action = "Action";
+
+		$this->data->status = $this->config->status;
 
 		return view('website.post.list', ['data' => $this->data]);
 	}
@@ -319,9 +324,25 @@ class PostsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayPostID = $request['selected'];
+				$this->post->destroyPosts($arrayPostID);
+				DB::commit();
+				return Redirect('/posts')->with('success', 'Success: delete post successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/posts')->with('error', 'Error: delete post successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/posts')->with('warning', 'Warning: there is no post selected!');
+		}
+		exit();		
 	}
 
 	public function getPostForm($datas=[]) {
@@ -329,10 +350,7 @@ class PostsController extends Controller {
 		$this->data->go_back = url('/posts');
 		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
 		$this->data->layouts = $this->layout->orderBy('name', 'asc')->lists('name', 'layout_id');
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define tap
 		$this->data->tab_general = 'General';

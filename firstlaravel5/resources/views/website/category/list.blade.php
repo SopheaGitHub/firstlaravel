@@ -1,5 +1,6 @@
-<form action="#" method="post" enctype="multipart/form-data" id="form-user-group">
-  	<div class="table-responsive">
+<form action="<?php echo $data->action_delete; ?>" method="post" enctype="multipart/form-data" id="form-category">
+  	<input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
+    <div class="table-responsive">
     	<table class="table table-bordered table-hover">
       		<thead>
         		<tr>

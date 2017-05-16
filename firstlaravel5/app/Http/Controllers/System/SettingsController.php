@@ -9,6 +9,7 @@ use App\Models\Country;
 use App\Models\Zone;
 use App\Models\Currency;
 use App\Http\Controllers\Common\FilemanagerController;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -34,12 +35,13 @@ class SettingsController extends Controller {
 		$this->country = new Country();
 		$this->zone = new Zone();
 		$this->filemanager = new FilemanagerController();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Settings';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
 			'setting'	=> ['text' => 'Settings', 'href' => url('settings')]
 		];
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
+		$this->data->dir_image = $this->config->dir_image;
 	}
 
 	/**

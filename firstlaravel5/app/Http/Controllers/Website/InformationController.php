@@ -6,6 +6,7 @@ use App\Models\Information;
 use App\Models\Language;
 use App\Models\Layout;
 use App\Models\UrlAlias;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -28,6 +29,7 @@ class InformationController extends Controller {
 		$this->language = new Language();
 		$this->layout = new Layout();
 		$this->url_alias = new UrlAlias();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Information';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -50,6 +52,7 @@ class InformationController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_information = url('/information/edit');
+		$this->data->action_delete = url('/information/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
@@ -273,19 +276,32 @@ class InformationController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayInformationID = $request['selected'];
+				$this->information->destroyInformation($arrayInformationID);
+				DB::commit();
+				return Redirect('/information')->with('success', 'Success: delete information successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/information')->with('error', 'Error: delete information successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/information')->with('warning', 'Warning: there is no information selected!');
+		}
+		exit();		
 	}
 
 	public function getInformationForm($datas=[]) {
 		$this->data->go_back = url('/information');
 		$this->data->languages = $this->language->getLanguages(['sort'=>'name', 'order'=>'asc'])->get();
 		$this->data->layouts = $this->layout->orderBy('name', 'asc')->lists('name', 'layout_id');
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define tap
 		$data['tab_general'] = 'General';

@@ -1,4 +1,5 @@
-<form action="#" method="post" enctype="multipart/form-data" id="form-user">
+<form action="<?php echo $data->action_delete; ?>" method="post" enctype="multipart/form-data" id="form-user">
+    <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
           <thead>
@@ -39,7 +40,7 @@
                       <input type="checkbox" name="selected[]" value="<?php echo $user->id; ?>" />
                     </td>
                     <td class="text-left"><?php echo $user->name; ?></td>
-                    <td class="text-left"><?php echo $user->status; ?></td>
+                    <td class="text-left"><?php echo ((isset($data->status[$user->status]))? $data->status[$user->status]:$user->status); ?></td>
                     <td class="text-left"><?php echo $user->created_at; ?></td>
                     <td class="text-right">
                       <a href="<?php echo $data->edit_user; ?>/<?php echo $user->id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>

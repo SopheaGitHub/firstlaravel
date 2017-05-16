@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\Models\Usergroup;
 use Illuminate\Http\Request;
+use App\Http\Controllers\ConfigController;
 use DB;
 use Hash;
 
@@ -24,6 +25,7 @@ class UsersController extends Controller {
 		$this->data = new \stdClass();
 		$this->user = new User();
 		$this->usergroup = new Usergroup();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Users';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -46,19 +48,20 @@ class UsersController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_user = url('/users/edit');
+		$this->data->action_delete = url('/users/destroy');
 		$this->data->change_password_user = url('/users/change-password');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -104,6 +107,8 @@ class UsersController extends Controller {
 		$this->data->column_status = "Status";
 		$this->data->column_date_added = "Date Added";
 		$this->data->column_action = "Action";
+
+		$this->data->status = $this->config->status;
 
 		return view('system.users.user.list', ['data' => $this->data]);
 	}
@@ -262,18 +267,31 @@ class UsersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayUserID = $request['selected'];
+				$this->user->destroyUsers($arrayUserID);
+				DB::commit();
+				return Redirect('/users')->with('success', 'Success: delete user successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/users')->with('error', 'Error: delete user successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/users')->with('warning', 'Warning: there is no user selected!');
+		}
+		exit();		
 	}
 
 	public function getUserForm($datas=[]) {
 		$this->data->go_back = url('/users');
 		$this->data->usergroups = $this->usergroup->orderBy('name', 'asc')->lists('name', 'user_group_id');
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Name';
@@ -295,10 +313,7 @@ class UsersController extends Controller {
 	public function getUserEditForm($datas=[]) {
 		$this->data->go_back = url('/users');
 		$this->data->usergroups = $this->usergroup->orderBy('name', 'asc')->lists('name', 'user_group_id');
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Name';

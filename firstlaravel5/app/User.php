@@ -42,6 +42,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		return $db;
 	}
 
+	public function destroyUsers($array_id) {
+		$result = User::whereIn('id', $array_id)->delete();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

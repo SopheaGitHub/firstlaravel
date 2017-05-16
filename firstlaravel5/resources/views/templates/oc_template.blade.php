@@ -82,7 +82,24 @@
 	            		}
 	            	?>
 	            </ul>
-	            @yield('message')
+	            <?php
+				    if(Session::get('success')) { ?>
+				      <div class="alert alert-success" id="success"><i class="fa fa-check-circle"></i> <?php echo Session::get('success'); ?>
+				          <button type="button" class="close" data-dismiss="alert">&times;</button>
+				      </div>
+				<?php } ?>
+				<?php
+				    if(Session::get('warning')) { ?>
+				      <div class="alert alert-warning" id="warning"><i class="fa fa-info-circle"></i> <?php echo Session::get('warning'); ?>
+				          <button type="button" class="close" data-dismiss="alert">&times;</button>
+				      </div>
+				<?php } ?>
+				<?php
+				    if(Session::get('error')) { ?>
+				      <div class="alert alert-danger" id="error"><i class="fa fa-times"></i> <?php echo Session::get('error'); ?>
+				        <button type="button" class="close" data-dismiss="alert">&times;</button>
+				      </div>
+				<?php } ?>
 	    	</div>
 	  	</div>
 	  	@yield('content')

@@ -187,10 +187,9 @@
                   <input type="hidden" name="config_icon" value="<?php echo (($data->config_icon)? $data->config_icon:''); ?>" id="input-icon" />
                 </div>
               </div>
-            </div>            
+            </div>        
           </div>
         </form>
-
 
       </div>
     </div>

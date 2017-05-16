@@ -4,6 +4,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Image;
 use App\Models\Pagination;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 
@@ -20,11 +21,12 @@ class FilemanagerController extends Controller {
 	{
 		$this->middleware('auth');
 		$this->data = new \stdClass();
+		$this->config = new ConfigController();
 
 		// create define
-		$this->data->dir_image = 'C:/xampp/htdocs/projects/firstlaravel/firstlaravel5/public/images/';
-		$this->data->https_catalog = url('/');
-		$this->data->http_catalog = url('/');
+		$this->data->dir_image = $this->config->dir_image;
+		$this->data->http_best_path = $this->config->http_best_path;
+		$this->data->https_best_path = $this->config->https_best_path;
 	}
 
 	/**
@@ -105,11 +107,11 @@ class FilemanagerController extends Controller {
 			} elseif (is_file($image)) {
 				// Find which protocol to use to pass the full image link back
 				// if ($this->request->server['HTTPS']) {
-				// 	$server = $this->data->https_catalog;
+				// 	$server = $this->data->https_best_path;
 				// } else {
-				// 	$server = $this->data->http_catalog;
+				// 	$server = $this->data->http_best_path;
 				// }
-				$server = $this->data->http_catalog;
+				$server = $this->data->http_best_path;
 
 				$data['images'][] = array(
 					'thumb' => $this->resize(substr($image, strlen($this->data->dir_image)), 100, 100),
@@ -305,6 +307,122 @@ class FilemanagerController extends Controller {
 		return json_encode($json);
 	}
 
+	public function postFolder() {
+		$request = \Request::all();
+		$json = [];
+
+		// Make sure we have the correct directory
+		if (isset($request['directory'])) {
+			$directory = rtrim($this->data->dir_image . 'catalog/' . str_replace(array('../', '..\\', '..'), '', $request['directory']), '/');
+		} else {
+			$directory = $this->data->dir_image . 'catalog';
+		}
+
+		// Check its a directory
+		if (!is_dir($directory)) {
+			$json['error'] = 'Warning: Directory does not exist!';
+		}
+
+		if (!$json) {
+			// Sanitize the folder name
+			$folder = str_replace(array('../', '..\\', '..'), '', basename(html_entity_decode($request['folder'], ENT_QUOTES, 'UTF-8')));
+
+			// Validate the filename length
+			if ((strlen($folder) < 3) || (strlen($folder) > 128)) {
+				$json['error'] = 'Warning: Folder name must be a between 3 and 255!';
+			}
+
+			// Check if directory already exists or not
+			if (is_dir($directory . '/' . $folder)) {
+				$json['error'] = 'Warning: A file or directory with the same name already exists!';
+			}
+		}
+
+		if (!$json) {
+			mkdir($directory . '/' . $folder, 0777);
+			chmod($directory . '/' . $folder, 0777);
+
+			$json['success'] = "Success: Directory created!";
+		}
+
+		return json_encode($json);
+	}
+
+	public function postDelete() {
+		$request = \Request::all();
+		$json = [];
+
+		if (isset($request['path'])) {
+			$paths = $request['path'];
+		} else {
+			$paths = [];
+		}
+
+		// Loop through each path to run validations
+		foreach ($paths as $path) {
+			$path = rtrim($this->data->dir_image . str_replace(array('../', '..\\', '..'), '', $path), '/');
+
+			// Check path exsists
+			if ($path == $this->data->dir_image . 'catalog') {
+				$json['error'] = "Warning: You can not delete this directory!";
+
+				break;
+			}
+		}
+
+		if (!$json) {
+			// Loop through each path
+			foreach ($paths as $path) {
+				$path = rtrim($this->data->dir_image . str_replace(array('../', '..\\', '..'), '', $path), '/');
+
+				// If path is just a file delete it
+				if (is_file($path)) {
+					unlink($path);
+
+				// If path is a directory beging deleting each file and sub folder
+				} elseif (is_dir($path)) {
+					$files = array();
+
+					// Make path into an array
+					$path = array($path . '*');
+
+					// While the path array is still populated keep looping through
+					while (count($path) != 0) {
+						$next = array_shift($path);
+
+						foreach (glob($next) as $file) {
+							// If directory add to path array
+							if (is_dir($file)) {
+								$path[] = $file . '/*';
+							}
+
+							// Add the file to the files to be deleted array
+							$files[] = $file;
+						}
+					}
+
+					// Reverse sort the file array
+					rsort($files);
+
+					foreach ($files as $file) {
+						// If file just delete
+						if (is_file($file)) {
+							unlink($file);
+
+						// If directory use the remove directory function
+						} elseif (is_dir($file)) {
+							rmdir($file);
+						}
+					}
+				}
+			}
+
+			$json['success'] = "Success: Your file or directory has been deleted!";
+		}
+
+		return json_encode($json);
+	}
+
 	public function resize($filename, $width, $height) {
 		if (!is_file($this->data->dir_image . $filename)) {
 			return;
@@ -340,12 +458,12 @@ class FilemanagerController extends Controller {
 		}
 
 		// if ($this->request->server['HTTPS']) {
-		// 	return HTTPS_CATALOG . 'image/' . $new_image;
+		// 	return https_best_path . 'image/' . $new_image;
 		// } else {
-		// 	return HTTP_CATALOG . 'image/' . $new_image;
+		// 	return http_best_path . 'image/' . $new_image;
 		// }
 
-		return $this->data->http_catalog. '/images/' . $new_image;
+		return $this->data->http_best_path. '/images/' . $new_image;
 	}
 
 }

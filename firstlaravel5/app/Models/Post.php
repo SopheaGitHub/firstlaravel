@@ -101,32 +101,32 @@ class Post extends Model {
 
 	public function insertPostDescription($datas=[]) {
 		$sql = '';
-		if(isset($datas['post_description_datas'])) {
+		if(isset($datas['post_description_datas']) && count($datas['post_description_datas']) > 0) {
 			foreach ($datas['post_description_datas'] as $language_id => $post_description) {
 				$sql .= " INSERT INTO `post_description`(`post_id`, `language_id`, `title`, `description`, `tag`, `meta_title`, `meta_description`, `meta_keyword`) VALUES ('".$datas['post_id']."', '".$language_id."', '".$post_description['title']."', '".$post_description['description']."', '".$post_description['tag']."', '".$post_description['meta_title']."', '".$post_description['meta_description']."', '".$post_description['meta_keyword']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function insertPostToLayout($datas=[]) {
 		$sql = '';
-		if(isset($datas['post_to_layout_datas'])) {
+		if(isset($datas['post_to_layout_datas']) && count($datas['post_to_layout_datas']) > 0) {
 			foreach ($datas['post_to_layout_datas'] as $post_to_layout) {
 				$sql .= " INSERT INTO `post_to_layout`(`post_id`, `website_id`, `layout_id`) VALUES ('".$post_to_layout['post_id']."', '".$post_to_layout['website_id']."', '".$post_to_layout['layout_id']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function insertPostCategory($datas=[]) {
 		$sql = '';
-		if(isset($datas['post_category_datas'])) {
+		if(isset($datas['post_category_datas']) && count($datas['post_category_datas']) > 0) {
 			foreach ($datas['post_category_datas'] as $post_category_value) {
 				$sql .= " INSERT INTO `post_to_category`(`post_id`, `category_id`) VALUES ('".$datas['post_id']."', '".$post_category_value."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function deletedPostDescription($post_id) {
@@ -143,6 +143,13 @@ class Post extends Model {
 
 	public function deletedPostToCategory($post_id) {
 		DB::table('post_to_category')->where('post_id', '=', $post_id)->delete();
+	}
+
+	public function destroyPosts($array_id) {
+		DB::table('post')->whereIn('post_id', $array_id)->delete();
+		DB::table('post_to_category')->whereIn('post_id', $array_id)->delete();
+		DB::table('post_description')->whereIn('post_id', $array_id)->delete();
+		DB::table('post_to_layout')->whereIn('post_id', $array_id)->delete();
 	}
 
 	public function validationForm($datas=[]) {

@@ -72,22 +72,22 @@ class Information extends Model {
 
 	public function insertInformationDescription($datas=[]) {
 		$sql = '';
-		if(isset($datas['information_description_datas'])) {
+		if(isset($datas['information_description_datas']) && count($datas['information_description_datas']) > 0) {
 			foreach ($datas['information_description_datas'] as $language_id => $information_description) {
 				$sql .= " INSERT INTO `information_description`(`information_id`, `language_id`, `title`, `description`, `meta_title`, `meta_description`, `meta_keyword`) VALUES ('".$datas['information_id']."', '".$language_id."', '".$information_description['title']."', '".$information_description['description']."', '".$information_description['meta_title']."', '".$information_description['meta_description']."', '".$information_description['meta_keyword']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function insertInformationToLayout($datas=[]) {
 		$sql = '';
-		if(isset($datas['information_to_layout_datas'])) {
+		if(isset($datas['information_to_layout_datas']) && count($datas['information_to_layout_datas']) > 0) {
 			foreach ($datas['information_to_layout_datas'] as $information_to_layout) {
 				$sql .= " INSERT INTO `information_to_layout`(`information_id`, `website_id`, `layout_id`) VALUES ('".$information_to_layout['information_id']."', '".$information_to_layout['website_id']."', '".$information_to_layout['layout_id']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function deletedInformationDescription($information_id) {
@@ -100,6 +100,12 @@ class Information extends Model {
 
 	public function deletedInformationToLayout($information_id) {
 		DB::table('information_to_layout')->where('information_id', '=', $information_id)->delete();
+	}
+
+	public function destroyInformation($array_id) {
+		DB::table('information')->whereIn('information_id', $array_id)->delete();
+		DB::table('information_description')->whereIn('information_id', $array_id)->delete();
+		DB::table('information_to_layout')->whereIn('information_id', $array_id)->delete();
 	}
 
 	public function validationForm($datas=[]) {

@@ -51,6 +51,7 @@ class BannersController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_banner = url('/banners/edit');
+		$this->data->action_delete = url('/banners/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
@@ -106,6 +107,8 @@ class BannersController extends Controller {
 		$this->data->column_name = "Banner Name";
 		$this->data->column_status = "Status";
 		$this->data->column_action = "Action";
+
+		$this->data->status = $this->config->status;
 
 		return view('website.design.banner.list', ['data' => $this->data]);
 	}
@@ -267,9 +270,25 @@ class BannersController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayBannerID = $request['selected'];
+				$this->banner->destroyBanners($arrayBannerID);
+				DB::commit();
+				return Redirect('/banners')->with('success', 'Success: delete banner successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/banners')->with('error', 'Error: delete banner successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/banners')->with('warning', 'Warning: there is no banner selected!');
+		}
+		exit();		
 	}
 
 	public function getBannerForm($datas=[]) {

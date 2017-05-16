@@ -44,18 +44,19 @@ class UsergroupsController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_user_group = url('/user-groups/edit');
+		$this->data->action_delete = url('/user-groups/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -215,9 +216,25 @@ class UsergroupsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		DB::beginTransaction();
+		if(isset($request['selected'])) {
+			try {
+				$arrayUserGroupID = $request['selected'];
+				$this->usergroup->destroyUserGroups($arrayUserGroupID);
+				DB::commit();
+				return Redirect('/user-groups')->with('success', 'Success: delete user group successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/user-groups')->with('error', 'Error: delete user group successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/user-groups')->with('warning', 'Warning: there is no user group selected!');
+		}
+		exit();		
 	}
 
 	public function getUserGroupForm($datas=[]) {

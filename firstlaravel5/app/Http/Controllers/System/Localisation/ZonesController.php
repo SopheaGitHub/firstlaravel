@@ -4,6 +4,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\Zone;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -24,6 +25,7 @@ class ZonesController extends Controller {
 		$this->data = new \stdClass();
 		$this->country = new Country();
 		$this->zone = new Zone();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Zones';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -46,18 +48,19 @@ class ZonesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_zone = url('/zones/edit');
+		$this->data->action_delete = url('/zones/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -224,19 +227,31 @@ class ZonesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayZoneID = $request['selected'];
+				$this->zone->destroyZones($arrayZoneID);
+				DB::commit();
+				return Redirect('/zones')->with('success', 'Success: delete zone successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/zones')->with('error', 'Error: delete zone successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/zones')->with('warning', 'Warning: there is no zone selected!');
+		}
+		exit();		
 	}
 
 	public function getZoneForm($datas=[]) {
 		$this->data->go_back = url('/zones');
 		$this->data->countries = $this->country->orderBy('name', 'asc')->lists('name', 'country_id');
-
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Zone Name';

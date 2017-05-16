@@ -17,6 +17,11 @@ class Language extends Model {
 		return $db;
 	}
 
+    public function destroyLanguages($array_id) {
+        $result = Language::whereIn('language_id', $array_id)->delete();
+        return $result;
+    }
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

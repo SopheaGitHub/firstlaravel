@@ -31,6 +31,11 @@ class Zone extends Model {
 		return $result;
 	}
 
+	public function destroyZones($array_id) {
+		$result = Zone::whereIn('zone_id', $array_id)->delete();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

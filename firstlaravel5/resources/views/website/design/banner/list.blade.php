@@ -1,4 +1,5 @@
-<form action="#" method="post" enctype="multipart/form-data" id="form-banner">
+<form action="<?php echo $data->action_delete; ?>" method="post" enctype="multipart/form-data" id="form-banner">
+  <input type="hidden" name="_token" value="<?php echo csrf_token(); ?>" />
     <div class="table-responsive">
       <table class="table table-bordered table-hover">
           <thead>
@@ -32,7 +33,7 @@
                       <input type="checkbox" name="selected[]" value="<?php echo $banner->banner_id; ?>" />
                     </td>
                     <td class="text-left"><?php echo $banner->name; ?></td>
-                    <td class="text-left"><?php echo $banner->status; ?></td>
+                    <td class="text-left"><?php echo ((isset($data->status[$banner->status]))? $data->status[$banner->status]:$banner->status); ?></td>
                     <td class="text-right">
                       <a href="<?php echo $data->edit_banner; ?>/<?php echo $banner->banner_id; ?>" data-toggle="tooltip" title="Edit" class="btn btn-primary"><i class="fa fa-pencil"></i></a>
                     </td>

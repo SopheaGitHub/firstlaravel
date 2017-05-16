@@ -17,6 +17,11 @@ class Usergroup extends Model {
 		return $db;
 	}
 
+	public function destroyUserGroups($array_id) {
+		$result = Usergroup::whereIn('user_group_id', $array_id)->delete();
+		return $result;
+	}
+
 	public function validationForm($datas=[]) {
 		$error = false;
 		$rules = [

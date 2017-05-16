@@ -25,16 +25,21 @@ class GeoZone extends Model {
 
 	public function insertZoneToGeoZone($datas=[]) {
 		$sql = '';
-		if(isset($datas['zone_to_geo_zone_datas'])) {
+		if(isset($datas['zone_to_geo_zone_datas']) && count($datas['zone_to_geo_zone_datas']) > 0) {
 			foreach ($datas['zone_to_geo_zone_datas'] as $zone_to_geo_zone) {
 				$sql .= " INSERT INTO `zone_to_geo_zone`(`country_id`, `zone_id`, `geo_zone_id`) VALUES ('".$zone_to_geo_zone['country_id']."', '".$zone_to_geo_zone['zone_id']."', '".$datas['geo_zone_id']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function deletedZoneToGeoZone($geo_zone_id) {
 		DB::table('zone_to_geo_zone')->where('geo_zone_id', '=', $geo_zone_id)->delete();
+	}
+
+	public function destroyGeoZones($array_id) {
+		$result = GeoZone::whereIn('geo_zone_id', $array_id)->delete();
+		return $result;
 	}
 
 	public function validationForm($datas=[]) {

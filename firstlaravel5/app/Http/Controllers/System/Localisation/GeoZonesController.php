@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Country;
 use App\Models\Zone;
 use App\Models\GeoZone;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -26,6 +27,7 @@ class GeoZonesController extends Controller {
 		$this->country = new Country();
 		$this->zone = new Zone();
 		$this->geo_zone = new GeoZone();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Geo-Zones';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -48,18 +50,19 @@ class GeoZonesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_geo_zone = url('/geo-zones/edit');
+		$this->data->action_delete = url('/geo-zones/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -240,20 +243,32 @@ class GeoZonesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayGeoZoneID = $request['selected'];
+				$this->geo_zone->destroyGeoZones($arrayGeoZoneID);
+				DB::commit();
+				return Redirect('/geo-zones')->with('success', 'Success: delete geo-zone successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/geo-zones')->with('error', 'Error: delete geo-zone successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/geo-zones')->with('warning', 'Warning: there is no geo-zone selected!');
+		}
+		exit();		
 	}
 
 	public function getGeoZoneForm($datas=[]) {
 		$this->data->go_back = url('/geo-zones');
 
 		$this->data->countries = $this->country->getCountries(['sort'=>'name','order'=>'asc'])->lists('name', 'country_id');
-
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Geo Zone Name';

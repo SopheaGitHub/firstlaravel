@@ -135,22 +135,22 @@ class Category extends Model {
 
 	public function insertCategoryDescription($datas=[]) {
 		$sql = '';
-		if(isset($datas['category_description_datas'])) {
+		if(isset($datas['category_description_datas']) && count($datas['category_description_datas']) > 0) {
 			foreach ($datas['category_description_datas'] as $language_id => $category_description) {
 				$sql .= " INSERT INTO `category_description`(`category_id`, `language_id`, `name`, `description`, `meta_title`, `meta_description`, `meta_keyword`) VALUES ('".$datas['category_id']."', '".$language_id."', '".$category_description['name']."', '".$category_description['description']."', '".$category_description['meta_title']."', '".$category_description['meta_description']."', '".$category_description['meta_keyword']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function insertCategoryToLayout($datas=[]) {
 		$sql = '';
-		if(isset($datas['category_to_layout_datas'])) {
+		if(isset($datas['category_to_layout_datas']) && count($datas['category_to_layout_datas']) > 0) {
 			foreach ($datas['category_to_layout_datas'] as $category_to_layout) {
 				$sql .= " INSERT INTO `category_to_layout`(`category_id`, `website_id`, `layout_id`) VALUES ('".$category_to_layout['category_id']."', '".$category_to_layout['website_id']."', '".$category_to_layout['layout_id']."'); ";
 			}
+			DB::connection()->getPdo()->exec($sql);
 		}
-		DB::connection()->getPdo()->exec($sql);
 	}
 
 	public function insertCategoryPath($datas=[]) {
@@ -183,6 +183,13 @@ class Category extends Model {
 
 	public function deletedCategoryPath($category_id) {
 		DB::table('category_path')->where('category_id', '=', $category_id)->delete();
+	}
+
+	public function destroyCategories($array_id) {
+		DB::table('category')->whereIn('category_id', $array_id)->delete();
+		DB::table('category_path')->whereIn('category_id', $array_id)->delete();
+		DB::table('category_to_layout')->whereIn('category_id', $array_id)->delete();
+		DB::table('category_description')->whereIn('category_id', $array_id)->delete();
 	}
 
 	public function validationForm($datas=[]) {

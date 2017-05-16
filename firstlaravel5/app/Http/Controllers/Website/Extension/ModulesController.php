@@ -60,7 +60,6 @@ class ModulesController extends Controller {
 				$this->setting->destroySetting($value);
 			}
 		}
-		
 
 		$data['extensions'] = array();
 		$files = glob($this->data->dir_application_http.'Controllers/Module/*.php');

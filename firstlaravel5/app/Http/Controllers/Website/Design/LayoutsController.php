@@ -4,8 +4,10 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Layout;
 use App\Models\Website;
+use App\Models\Extension;
 
 use Illuminate\Http\Request;
+use DB;
 
 class LayoutsController extends Controller {
 
@@ -23,6 +25,7 @@ class LayoutsController extends Controller {
 		$this->data = new \stdClass();
 		$this->layout = new Layout();
 		$this->website = new Website();
+		$this->extension = new Extension();
 		$this->data->web_title = 'Layouts';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -45,6 +48,7 @@ class LayoutsController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_layout = url('/layouts/edit');
+		$this->data->action_delete = url('/layouts/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
@@ -122,9 +126,44 @@ class LayoutsController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store()
+	public function postStore()
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->layout->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+			$layoutDatas = [
+				'name'			=> $request['name']
+			];
+			$layout = $this->layout->create($layoutDatas);
+
+			$layout_routeDatas = [
+				'layout_id'		=> $layout->id,
+				'layout_route' 	=> ((isset($request['layout_route']))? $request['layout_route']:[])
+			];
+
+			$layout_route = $this->layout->insertLayoutRoute($layout_routeDatas);
+
+			$layout_moduleDatas = [
+				'layout_id'		=> $layout->id,
+				'layout_module' 	=> ((isset($request['layout_module']))? $request['layout_module']:[])
+			];
+
+			$layout_route = $this->layout->insertLayoutModule($layout_moduleDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'create','msg'=>'Success : save layout successfully!', 'post'=>$request];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -144,9 +183,21 @@ class LayoutsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function edit($id)
+	public function getEdit($layout_id)
 	{
-		//
+		$this->data->layout = $this->layout->getLayout($layout_id);
+		$this->data->layout_routes = $this->layout->getLayoutRoutes($layout_id);
+		$this->data->layout_modules = $this->layout->getLayoutModules($layout_id);
+		
+		$datas = [
+			'action' => url('/layouts/update/'.$layout_id),
+			'titlelist'	=> 'Edit Layout',
+			'layout' => $this->data->layout,
+			'layout_routes'	=> $this->data->layout_routes,
+			'layout_modules' => $this->data->layout_modules
+		];
+		echo $this->getLayoutForm($datas);
+		exit();
 	}
 
 	/**
@@ -155,9 +206,47 @@ class LayoutsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function postUpdate($layout_id)
 	{
-		//
+		$request = \Request::all();
+		$validationError = $this->layout->validationForm(['request'=>$request]);
+		if($validationError) {
+			return \Response::json($validationError);
+		}
+
+		DB::beginTransaction();
+		try {
+
+			$layoutDatas = [
+				'name'			=> $request['name']
+			];
+			$layout = $this->layout->where('layout_id', '=', $layout_id)->update($layoutDatas);
+
+			$clear_layout_route = $this->layout->deletedLayoutRoute($layout_id);
+			$layout_routeDatas = [
+				'layout_id'		=> $layout_id,
+				'layout_route' 	=> ((isset($request['layout_route']))? $request['layout_route']:[])
+			];
+
+			$layout_route = $this->layout->insertLayoutRoute($layout_routeDatas);
+
+			$clear_layout_module = $this->layout->deletedLayoutModule($layout_id);
+			$layout_moduleDatas = [
+				'layout_id'		=> $layout_id,
+				'layout_module' 	=> ((isset($request['layout_module']))? $request['layout_module']:[])
+			];
+
+			$layout_route = $this->layout->insertLayoutModule($layout_moduleDatas);
+
+			DB::commit();
+			$return = ['error'=>'0','success'=>'1','action'=>'edit','msg'=>'Success : save layout successfully!'];
+			return \Response::json($return);
+		} catch (Exception $e) {
+			DB::rollback();
+			echo $e->getMessage();
+			exit();
+		}
+		exit();
 	}
 
 	/**
@@ -166,14 +255,56 @@ class LayoutsController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayLayoutID = $request['selected'];
+				$this->layout->destroyLayouts($arrayLayoutID);
+				DB::commit();
+				return Redirect('/layouts')->with('success', 'Success: delete layout successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/layouts')->with('error', 'Error: delete layout successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/layouts')->with('warning', 'Warning: there is no layout selected!');
+		}
+		exit();		
 	}
 
 	public function getLayoutForm($datas=[]) {
-		$this->data->go_back = url('/banners');
+		$this->data->go_back = url('/layouts');
 		$this->data->websites = $this->website->getWebsites(['sort'=>'name', 'order'=>'asc'])->get()->toArray();
+		$this->data->extensions = [];
+		// Get a list of installed modules
+		$extensions = $this->extension->getInstalled('module');
+
+		// Add all the modules which have multiple settings for each module
+		foreach ($extensions as $code) {
+
+			$module_data = [];
+
+			$modules = $this->extension->getModulesByCode($code);
+
+			foreach ($modules as $module) {
+				$module_data[] = [
+					'name' => ucfirst($code) . ' &gt; ' . $module['name'],
+					'code' => $code . '.' .  $module['module_id']
+				];
+			}
+
+			if ($module_data) {
+				$this->data->extensions[] = [
+					'name'   => ucfirst($code),
+					'code'   => $code,
+					'module' => $module_data
+				];
+			}
+		}
 
 		// define entry
 		$this->data->entry_name = 'Layout Name';
@@ -188,26 +319,29 @@ class LayoutsController extends Controller {
 		$this->data->button_remove = 'Remove';
 
 		$this->data->text_default = 'Default';
+		$this->data->text_content_top = 'Content Top';
+		$this->data->text_content_bottom = 'Content Bottom';
+		$this->data->text_column_left = 'Content Left';
+		$this->data->text_column_right = 'Content Right';
 
-		// if(isset($datas['banner'])) {
-		// 	$this->data->name = $datas['banner']->name;
-		// 	$this->data->banner_status = $datas['banner']->status;
-		// } else {
-		// 	$this->data->name = '';
-		// 	$this->data->banner_status = '1';
-		// }
+		if(isset($datas['layout'])) {
+			$this->data->name = $datas['layout']->name;
+		} else {
+			$this->data->name = '';
+		}
 
 		if(isset($datas['layout_routes'])) {
-			
+			$this->data->layout_routes = $datas['layout_routes'];
 		} else {
 			$this->data->layout_routes = [];
 		}
 
 		if(isset($datas['layout_modules'])) {
-			
+			$this->data->layout_modules = $datas['layout_modules'];
 		} else {
 			$this->data->layout_modules = [];
 		}
+		
 
 		$this->data->action = (($datas['action'])? $datas['action']:'');
 		$this->data->titlelist = (($datas['titlelist'])? $datas['titlelist']:'');

@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 use App\Models\Country;
+use App\Http\Controllers\ConfigController;
 
 use Illuminate\Http\Request;
 use DB;
@@ -22,6 +23,7 @@ class CountriesController extends Controller {
 
 		$this->data = new \stdClass();
 		$this->country = new Country();
+		$this->config = new ConfigController();
 		$this->data->web_title = 'Countries';
 		$this->data->breadcrumbs = [
 			'home'	=> ['text' => 'Home', 'href' => url('home')],
@@ -44,18 +46,19 @@ class CountriesController extends Controller {
 	public function getList() {
 		$request = \Request::all();
 		$this->data->edit_country = url('/countries/edit');
+		$this->data->action_delete = url('/countries/destroy');
 
 		// define data filter
 		if (isset($request['sort'])) {
 			$sort = $request['sort'];
 		} else {
-			$sort = 'created_at';
+			$sort = 'name';
 		}
 
 		if (isset($request['order'])) {
 			$order = $request['order'];
 		} else {
-			$order = 'desc';
+			$order = 'asc';
 		}
 
 		// define filter data
@@ -226,18 +229,30 @@ class CountriesController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function postDestroy()
 	{
-		//
+		$request = \Request::all();
+		if(isset($request['selected'])) {
+			DB::beginTransaction();
+			try {
+				$arrayCountryID = $request['selected'];
+				$this->country->destroyCountries($arrayCountryID);
+				DB::commit();
+				return Redirect('/countries')->with('success', 'Success: delete country successfully!');
+			} catch (Exception $e) {
+				DB::rollback();
+				return Redirect('/countries')->with('error', 'Error: delete country successfully!'.$e->getMessage());
+				exit();
+			}
+		}else {
+			return Redirect('/countries')->with('warning', 'Warning: there is no country selected!');
+		}
+		exit();		
 	}
 
 	public function getCountryForm($datas=[]) {
 		$this->data->go_back = url('/countries');
-
-		$this->data->status = [
-			'1' => 'Enabled',
-			'0'	=> 'Disabled'
-		];
+		$this->data->status = $this->config->status;
 
 		// define entry
 		$this->data->entry_name = 'Country Name';
