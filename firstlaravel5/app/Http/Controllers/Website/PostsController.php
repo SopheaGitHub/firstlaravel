@@ -299,7 +299,7 @@ class PostsController extends Controller {
 
 			$post_to_layout = $this->post->insertPostToLayout($post_to_layoutDatas);
 
-			$clear_post_to_layout = $this->post->deletedPostToCategory($post_id);
+			$clear_post_to_category = $this->post->deletedPostToCategory($post_id);
 			$post_to_categoryDatas = [
 				'post_id'		=> $post_id,
 				'post_category_datas'	=> $request['post_category']
