@@ -31,6 +31,7 @@ Route::group(['namespace' => 'Website'], function()
 		'categories' 		=> 'CategoriesController',
 		'posts' 		=> 'PostsController',
 		'information' 		=> 'InformationController',
+		'documentation'	=> 'DocumentationController'
 	]);
 });
 

@@ -22,6 +22,7 @@
         <li><a href="<?php echo url('/categories') ?>">Categories</a></li>
         <li><a href="<?php echo url('/posts') ?>">Posts</a></li>
         <li><a href="<?php echo url('/information') ?>">Information</a></li>
+        <li><a href="<?php echo url('/documentation') ?>">Documentation</a></li>
         <li><a class="parent">Extension</a>
           <ul>
             <li><a href="<?php echo url('/modules'); ?>">Modules</a></li>
